@@ -3,7 +3,8 @@
     "target": "es5",
     "lib": ["es6", "dom"],
     "typeRoots": ["./node_modules/@types", "./node_modules/@figma", "src/@types"],
-    "jsx": "react",
+    "jsx": "react-jsx",
+    "jsxImportSource": "@emotion/react",
     "esModuleInterop": true,
     "moduleResolution": "node"
   },
