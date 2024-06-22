@@ -1,10 +1,18 @@
 /* REQUEST TYPE */
-export type RequestInitialInfo = "requestInitialInfo";
+export enum RequestTypes {
+    INIT = 'INIT',
+    CLOSE = 'CLOSE'
+};
 
-export type RequestTypeList = RequestInitialInfo;
+/* EXCEPTION */
+export enum ExceptionTypes {
+    NO_SELECTION = 'NO_SELECTION'
+};
+
+export type NetworkType = RequestTypes | ExceptionTypes;
 
 /* PAYLOAD */
 export type MessagePayload = {
-    type: RequestTypeList;
+    type: NetworkType;
     data: Object;
 };

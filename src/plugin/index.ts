@@ -1,17 +1,18 @@
 import { FontData, InitialInfo, SelectionData } from "../shared/dto"
-import { fontToFontData, getMostUsageFontData } from "./lib/font-parse";
-import { sendInitialInfo } from "./lib/network/request";
+import { ExceptionTypes, MessagePayload, RequestTypes } from "../shared/network-type";
+import { constructFontData, getMostUsageFontData } from "./lib/font-parse";
+import { requestToUI } from "./lib/network/request";
 
 figma.showUI(__html__);
 
-figma.ui.resize(760, 631);
+figma.ui.resize(600, 461);
 
 async function loadFonts() {
     try {
         const availableFonts = (await figma.listAvailableFontsAsync()).filter(font => !font.fontName.family.startsWith(".") && !font.fontName.family.startsWith("?"));
         const localStyles = figma.getLocalTextStyles();
 
-        const fonts: FontData[] = fontToFontData(availableFonts, localStyles);
+        const fonts: FontData[] = constructFontData(availableFonts, localStyles);
         return fonts;
     } catch (error) {
         console.log("Error Loading Fonts: ", error);
@@ -58,6 +59,13 @@ async function getSelectionTexts(sceneNodes: readonly SceneNode[]) {
 async function getSelectionData(fonts: FontData[]) {
     try {
         const currentSelectionNodes = await getSelectionTexts(figma.currentPage.selection);
+        if (currentSelectionNodes.length === 0) {
+            requestToUI({
+                type: ExceptionTypes.NO_SELECTION,
+                data: null
+            });
+            return;
+        }
 
         return <SelectionData> {
             defaultFont: getMostUsageFontData(currentSelectionNodes, fonts)
@@ -68,9 +76,12 @@ async function getSelectionData(fonts: FontData[]) {
 }
 
 async function requestInitialInfo(selectionData: SelectionData, fonts: FontData[]) {
-    sendInitialInfo(<InitialInfo> {
-        selection: selectionData,
-        fonts: fonts
+    requestToUI({
+        type: RequestTypes.INIT,
+        data: <InitialInfo> {
+            selection: selectionData,
+            fonts: fonts
+        }
     });
 }
 
@@ -81,3 +92,11 @@ async function main() {
 }
 
 main();
+
+figma.ui.onmessage = function ({ type, data } : MessagePayload) {
+    switch(type) {
+        case RequestTypes.CLOSE:
+            figma.closePlugin();
+            break;
+    }
+};

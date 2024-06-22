@@ -1,5 +1,5 @@
 import { FontData, LocalStyle } from "../../shared/dto";
-import { formatFontName, getMatchedLocalStyleIndex, isSame, undoFormatFontName } from "../../shared/font";
+import { formatFontName, getMatchedLocalStyleIndex, isSameFontName, undoFormatFontName } from "../../shared/font";
 
 export function getMostUsageFontData(selections:readonly SceneNode[], fonts: FontData[]) : FontData {
     let res: FontData = null;
@@ -28,25 +28,28 @@ export function getMostUsageFontData(selections:readonly SceneNode[], fonts: Fon
             mx = fontCheckDict[k];
         }
     })
-    res = fonts.filter(font => isSame(font.fontName, fontName))[0];
+    res = fonts.filter(font => isSameFontName(font.fontName, fontName))[0];
 
     return res;
 }
 
-export function fontToFontData(fonts: Font[], localStyles: TextStyle[]) : FontData[] {
+export function constructFontData(fonts: Font[], localStyles: TextStyle[]) : FontData[] {
     const res: FontData[] = [];
+    let id = 1;
 
     fonts.forEach(font => {
         let fontName: FontName = font.fontName;
         let lsi = getMatchedLocalStyleIndex(fontName, localStyles);
         if (lsi === -1) {
             res.push(<FontData>{
+                id: id++,
                 fontName: fontName,
                 isLocalStyle: false,
                 localStyle: null
             });
         } else {
             res.push(<FontData>{
+                id: id++,
                 fontName: fontName,
                 isLocalStyle: true,
                 localStyle: <LocalStyle> {

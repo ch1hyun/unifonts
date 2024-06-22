@@ -1,12 +1,5 @@
-import { MessagePayload } from "../../../shared/network-type";
+import { MessagePayload, RequestTypes } from "../../../shared/network-type";
 
-export function requestToUI<T>(payload: T) {
-    figma.ui.postMessage({pluginMessage: payload});
-}
-
-export function sendInitialInfo(data: Object) {
-    requestToUI<MessagePayload>({
-        type: "requestInitialInfo",
-        data: data
-    });
+export function requestToUI<MessagePayload>(payload: MessagePayload) {
+    figma.ui.postMessage(payload);
 }

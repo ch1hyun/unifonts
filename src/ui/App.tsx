@@ -1,22 +1,49 @@
-import React, { useState } from 'react';
-import { MessagePayload } from '../shared/network-type';
-import { isRequestPayload } from './lib/network/response';
+import React, { createContext, useState } from 'react';
+import { ExceptionTypes, MessagePayload, RequestTypes } from '../shared/network-type';
 import { InitialInfo } from '../shared/dto';
-import { formatFontData } from '../shared/font';
+import Unifont from './component/Unifont';
+import { requestToPlugin } from './lib/network/request';
+
+export const InitContext = createContext(null);
 
 function App() {
-  const [text, setText] = useState("Hello World");
+  const [init, setInit] = useState<InitialInfo>(null);
   
-  window.onmessage = async (message: MessageEvent) => {
-    let payload: MessagePayload = message.data.pluginMessage.pluginMessage;
-    if (isRequestPayload(payload, 'requestInitialInfo')) {
-      const initialInfo: InitialInfo = payload.data as InitialInfo;
-      setText(formatFontData(initialInfo.selection.defaultFont));
-      // Do Something Initial Process...
+  window.onmessage = async (event: MessageEvent) => {
+    const pluginMessage: MessagePayload = event.data.pluginMessage;
+    const { type, data } = pluginMessage;
+
+    switch (type) {
+      // Requests
+      case RequestTypes.INIT:
+        setInit(data as InitialInfo);
+        break;
+      
+      // Exceptions
+      case ExceptionTypes.NO_SELECTION:
+        alert("Must select at least one");
+        requestToPlugin({
+          type: RequestTypes.CLOSE,
+          data: null
+        });
+        break;
     }
   }
 
-  return <h1>{text}</h1>;
+  function close() {
+    requestToPlugin({
+      type: RequestTypes.CLOSE,
+      data: null
+    });
+  }
+
+  return (
+    <>
+    <InitContext.Provider value={{init, close}}>
+      <Unifont/>
+    </InitContext.Provider>
+    </>
+  );
 }
 
 export default App;
