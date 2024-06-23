@@ -1,7 +1,9 @@
-import { FontData, InitialInfo, SelectionData } from "../shared/dto"
+import { ConvertInfo, FontData, InitialInfo, SelectionData } from "../shared/dto"
 import { ExceptionTypes, MessagePayload, RequestTypes } from "../shared/network-type";
+import { DefaultSelectionNode, NodeType, ParentNode, SelectionNode } from "./lib/dto";
 import { constructFontData, getMostUsageFontData } from "./lib/font-parse";
 import { requestToUI } from "./lib/network/request";
+import { isProcessing, process } from "./lib/process";
 
 figma.showUI(__html__);
 
@@ -19,37 +21,43 @@ async function loadFonts() {
     }
 }
 
-async function getSelectionTexts(sceneNodes: readonly SceneNode[]) {
-    let res: SceneNode[] = [];
+export async function getSelectionTexts(sceneNodes: readonly SceneNode[], parentType: NodeType, parentNode: ParentNode = null): Promise<SelectionNode[]> {
+    let res: SelectionNode[] = [];
 
     for (let i = 0; i < sceneNodes.length; ++i) {
         const sceneNode = sceneNodes[i];
 
         if (sceneNode.type === "TEXT") {
-            res.push(sceneNode);
+            res.push({
+                parentType: parentType,
+                parentNode: parentNode,
+                node: (sceneNode as TextNode)
+            });
+            continue;
         }
 
-        let convertedSceneNode = null;
+        let currentParentNode = null;
+        let currentParentType = null;
 
         if (sceneNode.type === "FRAME") {
-            convertedSceneNode = sceneNode as FrameNode;
+            currentParentNode = sceneNode as FrameNode;
+            currentParentType = NodeType.Frame;
         }
-
-        if (sceneNode.type === "COMPONENT") {
-            convertedSceneNode = sceneNode as ComponentNode;
+        else if (sceneNode.type === "COMPONENT") {
+            currentParentNode = sceneNode as ComponentNode;
+            currentParentType = NodeType.Component;
         }
-
-        if (sceneNode.type === "GROUP") {
-            convertedSceneNode = sceneNode as GroupNode;
+        else if (sceneNode.type === "GROUP") {
+            currentParentNode = sceneNode as GroupNode;
+            currentParentType = NodeType.Group;
         }
-
-        if (sceneNode.type === "INSTANCE") {
-            convertedSceneNode = sceneNode as InstanceNode;
+        else if (sceneNode.type === "INSTANCE") {
+            currentParentNode = sceneNode as InstanceNode;
+            currentParentType = NodeType.Instance;
         }
-
-        if (convertedSceneNode !== null && convertedSceneNode.children.length) {
-            const childSelectionTexts = await getSelectionTexts(convertedSceneNode.children);
-            res = res.concat(childSelectionTexts);
+        else if (currentParentNode !== null && currentParentNode.children.length) {
+            const childSelectionTexts = await getSelectionTexts(currentParentNode.children, currentParentType, currentParentNode);
+            res.push(...childSelectionTexts);
         }
     }
 
@@ -58,7 +66,7 @@ async function getSelectionTexts(sceneNodes: readonly SceneNode[]) {
 
 async function getSelectionData(fonts: FontData[]) {
     try {
-        const currentSelectionNodes = await getSelectionTexts(figma.currentPage.selection);
+        const currentSelectionNodes: SelectionNode[] = await getSelectionTexts(figma.currentPage.selection, NodeType.Root);
         if (currentSelectionNodes.length === 0) {
             requestToUI({
                 type: ExceptionTypes.NO_SELECTION,
@@ -93,10 +101,15 @@ async function main() {
 
 main();
 
-figma.ui.onmessage = function ({ type, data } : MessagePayload) {
+figma.ui.onmessage = async function ({ type, data } : MessagePayload) {
     switch(type) {
         case RequestTypes.CLOSE:
             figma.closePlugin();
+            break;
+        case RequestTypes.PROCESS:
+            if (!isProcessing) {
+                await process(data as ConvertInfo);
+            }
             break;
     }
 };

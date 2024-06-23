@@ -10,6 +10,7 @@ function Footer() {
     const isValidSelected = useContext(UnifontContext).isValidSelected;
     const isValidSelectedTag = useContext(UnifontContext).isValidSelectedTag;
     const close = useContext(InitContext).close;
+    const requestConvertEntry = useContext(UnifontContext).requestConvertEntry;
 
     function handlePage(name) {
         if (
@@ -47,7 +48,7 @@ function Footer() {
                     <button className="button margin-right-5" onClick={() => handlePage("tag")}>
                         Tag
                     </button>
-                    <button className="button dark">
+                    <button className="button dark" onClick={() => requestConvertEntry()}>
                         Confirm
                     </button>
                 </div>

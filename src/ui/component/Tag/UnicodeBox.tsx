@@ -20,7 +20,7 @@ function UnicodeBox(props) {
 
     return (
         <>
-        <div className="container flex-column flex-grow">
+        <div className="container flex-column flex-grow padding">
             {unicodeList}
             <div className="item container flex-column flex-justify-center align-center hover-pointer hover-bg" onClick={() => addUnicode()}>
                 <span className="font-bold font-size-1_1">+</span>

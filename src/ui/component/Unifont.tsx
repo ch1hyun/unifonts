@@ -4,12 +4,15 @@ import EditConvert from './Convert/EditConvert';
 import Footer from './Footer';
 import './Unifont.css'
 import { InitContext } from '../App';
-import { DefaultNumber, DefaultTagType, DefaultUnicodeType, Tag, Unicode } from '../../shared/dto';
+import { DefaultNumber, DefaultTagType, DefaultUnicodeType, FontData, Tag, Unicode } from '../../shared/dto';
 import { DefaultUIConvertData, UIConvertData, UITagMap } from './dto';
 import TagList from './Tag/TagList';
 import EditTag from './Tag/EditTag';
 import { formatFontData } from '../../shared/font';
 import { isNumeric } from '../../shared/util';
+import { generateConvertInfo } from '../lib/network/parseData';
+import { requestToPlugin } from '../lib/network/request';
+import { RequestTypes } from '../../shared/network-type';
 
 export const UnifontContext = createContext(null);
 
@@ -18,17 +21,18 @@ function Unifont() {
     /* Init */
     const init = useContext(InitContext).init;
     if (init === null) return (<><span>Loading Data...</span></>);
+    const fonts: FontData[] = init.fonts;
 
     /* Refs */
-    const convertId = useRef(1);
-    const tagId= useRef(1);
+    const convertId = useRef(2);
+    const tagId= useRef(3);
 
     /* States */
     const [page, setPage] = useState("main");
     const [tags, setTags] = useState<Tag[]>([
         {
             ...DefaultTagType,
-            id: tagId.current++,
+            id: 1,
             name: "Default",
             color: "#676B76",
             unicodes: [{
@@ -40,7 +44,7 @@ function Unifont() {
         },
         {
             ...DefaultTagType,
-            id: tagId.current++,
+            id: 2,
             name: "Test",
             color: "#d2d2d2",
             unicodes: [{
@@ -53,7 +57,7 @@ function Unifont() {
     const tagMap = useRef<UITagMap[]>([]);
 
     const [defaultConvert, setDefaultConvert] = useState<UIConvertData>({
-        id: convertId.current++,
+        id: 1,
         type: "default",
         tags: [1],
         font: init.selection.defaultFont
@@ -128,19 +132,33 @@ function Unifont() {
     }
 
     function addConvert() {
-        const newItem: UIConvertData = {
-            ...DefaultUIConvertData,
-            id: convertId.current++,
-            type: "general",
-            font: defaultConvert.font
-        };
+        if (isValidSelected()) {
+            const newItem: UIConvertData = {
+                ...DefaultUIConvertData,
+                id: convertId.current++,
+                type: "general",
+                font: defaultConvert.font
+            };
 
-        setConverts(c => [
-            ...c,
-            newItem
+            setConverts(c => [
+                ...c,
+                newItem
+            ]);
+
+            setSelected(newItem);
+        }
+    }
+
+    function deleteConvert(convertId: number) {
+        if (convertId === 1) return;
+
+        const idx = converts.map(c => c.id).indexOf(convertId);
+        setConverts([
+            ...converts.slice(0, idx),
+            ...converts.slice(idx + 1)
         ]);
 
-        setSelected(newItem);
+        setSelected(null);
     }
 
     function getTagMap(id) {
@@ -192,6 +210,20 @@ function Unifont() {
             ...tm.convertDataId.slice(0, tmIdx),
             ...tm.convertDataId.slice(tmIdx + 1)
         ];
+    }
+
+    function changeFont(fontId: number) {
+        if (selected === null) return;
+
+        const findFont = fonts.filter(f => f.id === fontId);
+        if (findFont.length === 0) return;
+
+        const font: FontData = findFont[0];
+
+        setSelected({
+            ...selected,
+            font: font
+        });
     }
 
     function isValidSelectedTag(): boolean {
@@ -290,6 +322,12 @@ function Unifont() {
             "Tag will be delete with related fonts (If font have just one tag[" + selectedTag.name + "], delete)." + 
             "\nContinue?"
         )) {
+            if (tags.length === 2) {
+                alert(
+                    "Must have tag at least one."
+                );
+                return;
+            }
             const tm: UITagMap = getTagMap(selectedTag.id);
 
             // Delete font if have one tag that selected
@@ -327,14 +365,22 @@ function Unifont() {
         }
     }
 
+    function requestConvertEntry() {
+        requestToPlugin({
+            type: RequestTypes.PROCESS,
+            data: generateConvertInfo(defaultConvert, converts, tags)
+        });
+    }
+
     return (
         <>
         <UnifontContext.Provider value={{
                 page, defaultConvert, converts, tags, selected, selectedTag,
-                setPage, setSelect, addConvert, addTag, deleteTag, isValidSelected, isValidSelectedTag,
+                setPage, setSelect, addConvert, deleteConvert, addTag, deleteTag, changeFont, isValidSelected, isValidSelectedTag,
                 setSelectTag, changeSelectedTagName,
                 changeSelectedTagColor, addSelectedTagUnicode, deleteSelectedTagUnicode, updateSelectedTagUnicode,
                 addTagItem, deleteTagItem,
+                requestConvertEntry
             }}>
             <div className={`container flex-row flex-grow padding ${page !== "main" ? "hidden" : ""}`}>
                 <ConvertList/>

@@ -1,12 +1,13 @@
 /* REQUEST TYPE */
 export enum RequestTypes {
     INIT = 'INIT',
-    CLOSE = 'CLOSE'
+    CLOSE = 'CLOSE',
+    PROCESS = 'PROCESS',
 };
 
 /* EXCEPTION */
 export enum ExceptionTypes {
-    NO_SELECTION = 'NO_SELECTION'
+    NO_SELECTION = 'NO_SELECTION',
 };
 
 export type NetworkType = RequestTypes | ExceptionTypes;

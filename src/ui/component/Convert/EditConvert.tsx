@@ -21,14 +21,6 @@ function EditConvert() {
 
     const selectedTags: Tag[] = tags.filter(t => selected.tags.indexOf(t.id) !== -1);
     const restrictBox = selected.type === "default" ? (<><div className="restricted-tagbox"></div></>) : (<></>);
-    // console.log(
-    //     "selected >> {" +
-    //     "\n\tid : " + selected.id + "," + 
-    //     "\n\ttype : " + selected.type + "," + 
-    //     "\n\ttag length : " + selected.tags.length + "," + 
-    //     "\n\tfont : " + formatFontData(selected.font) + "," + 
-    //     "}"
-    // );
 
     return (
         <>

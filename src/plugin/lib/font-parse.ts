@@ -1,15 +1,16 @@
 import { FontData, LocalStyle } from "../../shared/dto";
 import { formatFontName, getMatchedLocalStyleIndex, isSameFontName, undoFormatFontName } from "../../shared/font";
+import { SelectionNode } from "./dto";
 
-export function getMostUsageFontData(selections:readonly SceneNode[], fonts: FontData[]) : FontData {
+export function getMostUsageFontData(selections: SelectionNode[], fonts: FontData[]) : FontData {
     let res: FontData = null;
     let fontCheckDict: {[key: string]: number} = {};
 
     selections.forEach(s => {
-        if (s?.type === "TEXT") {
-            let length = s.characters.length;
+        if (s?.node.type === "TEXT") {
+            let length = s.node.characters.length;
             for (let i = 0; i < length; ++i) {
-                let formattedFont: string = formatFontName(s.getRangeFontName(i, i + 1) as FontName);
+                let formattedFont: string = formatFontName(s.node.getRangeFontName(i, i + 1) as FontName);
 
                 if (fontCheckDict[formattedFont] === undefined) {
                     fontCheckDict[formattedFont] = 0;

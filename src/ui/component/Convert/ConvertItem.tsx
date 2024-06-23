@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useRef } from "react";
 import { formatFontData } from "../../../shared/font";
 import { UIConvertData } from "../dto";
 import { UnifontContext } from "../Unifont";
@@ -8,16 +8,34 @@ function ConvertItem(props) {
     const item: UIConvertData = props.item;
     const additionalClassName = props.className;
     const setSelect = useContext(UnifontContext).setSelect;
+    const deleteConvert = useContext(UnifontContext).deleteConvert;
 
     const tagList = item.tags.map(tagId => (
         <TagItem tagId={tagId}/>
     ))
+    const deleteBtn = useRef(null);
+
+    function handleEnter() {
+        if (item.id === 1) return;
+        if (deleteBtn.current.classList.contains("hidden")) {
+            deleteBtn.current.classList.remove("hidden");
+        }
+    }
+
+    function handleLeave() {
+        if (item.id === 1) return;
+        if (!deleteBtn.current.classList.contains("hidden")) {
+            deleteBtn.current.classList.add("hidden");
+        }
+    }
 
     return (
         <>
         <li
             className={`item container flex-column hover-pointer hover-bg ${additionalClassName}`}
             onClick={() => setSelect(item.id)}
+            onMouseEnter={() => handleEnter()}
+            onMouseLeave={() => handleLeave()}
         >
             <div className="container flex-row align-center flex-1">
                 {tagList}
@@ -27,6 +45,10 @@ function ConvertItem(props) {
                     {formatFontData(item.font)}
                 </span>
             </div>
+            {
+                item.id === 1 ? (<></>) :
+                (<div className="delete-item hover-pointer hidden" ref={deleteBtn} onClick={() => deleteConvert(item.id)}><span>✕</span></div>)
+            }
         </li>
         </>
     );
