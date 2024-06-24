@@ -43,13 +43,14 @@ function extractFontNamesFromConverts(converts: ConvertData[]): FontName[] {
     return fontNames;
 }
 
-export function generateConvertInfo(defaultConvert: UIConvertData, generalConverts: UIConvertData[], tags: Tag[]): ConvertInfo {
+export function generateConvertInfo(defaultConvert: UIConvertData, generalConverts: UIConvertData[], tags: Tag[], usedFonts: FontName[]): ConvertInfo {
     const converts: ConvertData[] = [];
 
     generalConverts.map(gc => converts.push(generateConvertData(gc, tags)));
     converts.push(generateConvertData(defaultConvert, tags));
 
     const fontNames: FontName[] = extractFontNamesFromConverts(converts);
+    fontNames.push(...usedFonts);
 
     return {
         converts: converts,

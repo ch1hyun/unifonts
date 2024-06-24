@@ -25,7 +25,7 @@ function Unifont() {
 
     /* Refs */
     const convertId = useRef(2);
-    const tagId= useRef(3);
+    const tagId= useRef(9);
 
     /* States */
     const [page, setPage] = useState("main");
@@ -35,23 +35,152 @@ function Unifont() {
             id: 1,
             name: "Default",
             color: "#676B76",
-            unicodes: [{
-                ...DefaultUnicodeType,
-                type: "range",
-                from: 0,
-                to: 0x1FFFF
-            }]
+            unicodes: [
+                {
+                    ...DefaultUnicodeType,
+                    type: "range",
+                    from: 0,
+                    to: 0x1FFFF // In fact, don't need value
+                }
+            ]
         },
         {
             ...DefaultTagType,
             id: 2,
-            name: "Test",
+            name: "Korean",
             color: "#d2d2d2",
-            unicodes: [{
-                ...DefaultUnicodeType,
-                type: "single",
-                from: 54
-            }]
+            unicodes: [
+                {
+                    ...DefaultUnicodeType,
+                    type: "range",
+                    from: 0xAC00,
+                    to: 0xD7A3 
+                }
+            ]
+        },
+        {
+            ...DefaultTagType,
+            id: 3,
+            name: "English",
+            color: "#d2d2d2",
+            unicodes: [
+                {
+                    ...DefaultUnicodeType,
+                    type: "range",
+                    from: 0x0041,
+                    to: 0x005A
+                },
+                {
+                    ...DefaultUnicodeType,
+                    type: "range",
+                    from: 0x0061,
+                    to: 0x007A
+                }
+            ]
+        },
+        {
+            ...DefaultTagType,
+            id: 4,
+            name: "Number",
+            color: "#d2d2d2",
+            unicodes: [
+                {
+                    ...DefaultUnicodeType,
+                    type: "range",
+                    from: 0x0030,
+                    to: 0x0039
+                }
+            ]
+        },
+        {
+            ...DefaultTagType,
+            id: 5,
+            name: "Special Symbol",
+            color: "#d2d2d2",
+            unicodes: [
+                {
+                    ...DefaultUnicodeType,
+                    type: "range",
+                    from: 0x0020,
+                    to: 0x002F
+                },
+                {
+                    ...DefaultUnicodeType,
+                    type: "range",
+                    from: 0x003A,
+                    to: 0x0040
+                },
+                {
+                    ...DefaultUnicodeType,
+                    type: "range",
+                    from: 0x005B,
+                    to: 0x0060
+                },
+                {
+                    ...DefaultUnicodeType,
+                    type: "range",
+                    from: 0x007B,
+                    to: 0x007E
+                }
+            ]
+        },
+        {
+            ...DefaultTagType,
+            id: 6,
+            name: "English - Upper Case",
+            color: "#d2d2d2",
+            unicodes: [
+                {
+                    type: "range",
+                    from: 0x0041,
+                    to: 0x005A
+                }
+            ]
+        },
+        {
+            ...DefaultTagType,
+            id: 7,
+            name: "English - Lower Case",
+            color: "#d2d2d2",
+            unicodes: [
+                {
+                    type: "range",
+                    from: 0x0061,
+                    to: 0x007A
+                }
+            ]
+        },
+        {
+            ...DefaultTagType,
+            id: 8,
+            name: "Japanese",
+            color: "#d2d2d2",
+            unicodes: [
+                // hiragana
+                {
+                    type: "range",
+                    from: 0x3041,
+                    to: 0x3096
+                },
+                {
+                    type: "single",
+                    from: 0x309D
+                },
+                {
+                    type: "single",
+                    from: 0x309E
+                },
+                // katakana
+                {
+                    type: "range",
+                    from: 0x30A1,
+                    to: 0x30Fa
+                },
+                {
+                    type: "single",
+                    from: 0x30FC
+                }
+            ]
         }
     ]);
     const tagMap = useRef<UITagMap[]>([]);
@@ -368,7 +497,7 @@ function Unifont() {
     function requestConvertEntry() {
         requestToPlugin({
             type: RequestTypes.PROCESS,
-            data: generateConvertInfo(defaultConvert, converts, tags)
+            data: generateConvertInfo(defaultConvert, converts, tags, init.selection.usedFonts)
         });
     }
 

@@ -1,7 +1,7 @@
 import { ConvertInfo, FontData, InitialInfo, SelectionData } from "../shared/dto"
 import { ExceptionTypes, MessagePayload, RequestTypes } from "../shared/network-type";
-import { DefaultSelectionNode, NodeType, ParentNode, SelectionNode } from "./lib/dto";
-import { constructFontData, getMostUsageFontData } from "./lib/font-parse";
+import {  ParentNode, SelectionNode } from "./lib/dto";
+import { constructFontData, generateSelectionData } from "./lib/font-parse";
 import { requestToUI } from "./lib/network/request";
 import { isProcessing, process } from "./lib/process";
 
@@ -21,42 +21,39 @@ async function loadFonts() {
     }
 }
 
-export async function getSelectionTexts(sceneNodes: readonly SceneNode[], parentType: NodeType, parentNode: ParentNode = null): Promise<SelectionNode[]> {
+export async function getSelectionTexts(sceneNodes: readonly SceneNode[], parentNode: ParentNode = null): Promise<SelectionNode[]> {
     let res: SelectionNode[] = [];
 
     for (let i = 0; i < sceneNodes.length; ++i) {
         const sceneNode = sceneNodes[i];
 
         if (sceneNode.type === "TEXT") {
-            res.push({
-                parentType: parentType,
-                parentNode: parentNode,
-                node: (sceneNode as TextNode)
-            });
+            if ((sceneNode as TextNode).characters.trim().length > 0) {
+                res.push({
+                    parentNode: parentNode,
+                    node: (sceneNode as TextNode)
+                });
+            }
             continue;
         }
 
         let currentParentNode = null;
-        let currentParentType = null;
 
         if (sceneNode.type === "FRAME") {
             currentParentNode = sceneNode as FrameNode;
-            currentParentType = NodeType.Frame;
         }
         else if (sceneNode.type === "COMPONENT") {
             currentParentNode = sceneNode as ComponentNode;
-            currentParentType = NodeType.Component;
         }
         else if (sceneNode.type === "GROUP") {
             currentParentNode = sceneNode as GroupNode;
-            currentParentType = NodeType.Group;
         }
         else if (sceneNode.type === "INSTANCE") {
             currentParentNode = sceneNode as InstanceNode;
-            currentParentType = NodeType.Instance;
         }
-        else if (currentParentNode !== null && currentParentNode.children.length) {
-            const childSelectionTexts = await getSelectionTexts(currentParentNode.children, currentParentType, currentParentNode);
+
+        if (currentParentNode !== null && currentParentNode.children.length) {
+            const childSelectionTexts = await getSelectionTexts(currentParentNode.children, currentParentNode);
             res.push(...childSelectionTexts);
         }
     }
@@ -66,7 +63,7 @@ export async function getSelectionTexts(sceneNodes: readonly SceneNode[], parent
 
 async function getSelectionData(fonts: FontData[]) {
     try {
-        const currentSelectionNodes: SelectionNode[] = await getSelectionTexts(figma.currentPage.selection, NodeType.Root);
+        const currentSelectionNodes: SelectionNode[] = await getSelectionTexts(figma.currentPage.selection, figma.currentPage);
         if (currentSelectionNodes.length === 0) {
             requestToUI({
                 type: ExceptionTypes.NO_SELECTION,
@@ -75,9 +72,8 @@ async function getSelectionData(fonts: FontData[]) {
             return;
         }
 
-        return <SelectionData> {
-            defaultFont: getMostUsageFontData(currentSelectionNodes, fonts)
-        };
+        return generateSelectionData(currentSelectionNodes, fonts);
+
     } catch (error) {
         console.log("ERROR: while loading selection info - ", error);
     }

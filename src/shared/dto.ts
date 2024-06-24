@@ -66,6 +66,7 @@ export const DefaultFontDataType: FontData = {
 /* Selection */
 export type SelectionData = {
     defaultFont: FontData;
+    usedFonts: FontName[];
 };
 /* End */
 
