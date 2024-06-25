@@ -245,7 +245,7 @@ input:focus {
 
 /* Defined */
 .tag {
-    height: 25px;
+    height: fit-content;
 }
 
 .tag blockquote {

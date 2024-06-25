@@ -8,11 +8,7 @@ import { DefaultNumber, DefaultTagType, DefaultUnicodeType, FontData, Tag, Unico
 import { DefaultUIConvertData, UIConvertData, UITagMap } from './dto';
 import TagList from './Tag/TagList';
 import EditTag from './Tag/EditTag';
-import { formatFontData } from '../../shared/font';
-import { isNumeric } from '../../shared/util';
 import { generateConvertInfo } from '../lib/network/parseData';
-import { requestToPlugin } from '../lib/network/request';
-import { RequestTypes } from '../../shared/network-type';
 
 export const UnifontContext = createContext(null);
 
@@ -22,6 +18,7 @@ function Unifont() {
     const init = useContext(InitContext).init;
     if (init === null) return (<><span>Loading Data...</span></>);
     const fonts: FontData[] = init.fonts;
+    const process = useContext(InitContext).process;
 
     /* Refs */
     const convertId = useRef(2);
@@ -495,10 +492,9 @@ function Unifont() {
     }
 
     function requestConvertEntry() {
-        requestToPlugin({
-            type: RequestTypes.PROCESS,
-            data: generateConvertInfo(defaultConvert, converts, tags, init.selection.usedFonts)
-        });
+        process(
+            generateConvertInfo(defaultConvert, converts, tags, init.selection.usedFonts)
+        );
     }
 
     return (

@@ -1,12 +1,39 @@
 import React, { createContext, useState } from 'react';
 import { ExceptionTypes, MessagePayload, RequestTypes } from '../shared/network-type';
-import { InitialInfo } from '../shared/dto';
+import { ConvertInfo, InitialInfo } from '../shared/dto';
 import Unifont from './component/Unifont';
 import { requestToPlugin } from './lib/network/request';
+
+var logger = function()
+{
+    var oldConsoleLog = null;
+    var pub = {
+      enableLogger: function enableLogger() {
+        if(oldConsoleLog == null) {
+          console.log("here");
+          return;
+        }
+        window['console']['log'] = oldConsoleLog;
+      },
+      disableLogger: function disableLogger() {
+        console.log("here");
+        oldConsoleLog = console.log;
+        console.log(oldConsoleLog);
+        window['console']['log'] = function() {};
+      }
+    };
+
+    return pub;
+}();
 
 export const InitContext = createContext(null);
 
 function App() {
+  // Start App
+  console.log("==================== Unifonts Started ====================");
+  console.log("================== Disable Console Logs ==================");
+  logger.disableLogger();
+
   const [init, setInit] = useState<InitialInfo>(null);
   
   window.onmessage = async (event: MessageEvent) => {
@@ -30,16 +57,32 @@ function App() {
     }
   }
 
+  function enableConsole() {
+    // Error Detected
+    logger.enableLogger();
+    console.log("=================== Enable Console Logs ==================");
+    console.log("===================== Unifonts Ended =====================");
+  }
+
   function close() {
+    enableConsole();
     requestToPlugin({
       type: RequestTypes.CLOSE,
       data: null
     });
   }
 
+  function process(convertInfo: ConvertInfo) {
+    enableConsole();
+    requestToPlugin({
+      type: RequestTypes.PROCESS,
+      data: convertInfo
+    });
+  }
+
   return (
     <>
-    <InitContext.Provider value={{init, close}}>
+    <InitContext.Provider value={{init, close, process}}>
       <Unifont/>
     </InitContext.Provider>
     </>

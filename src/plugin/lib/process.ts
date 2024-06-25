@@ -109,12 +109,11 @@ function admitConvert(selection: SelectionNode, converts: ConvertData[]) {
                 // split
                 if (nextX - initX + currentNode.width > maxWidth) {
                     currentNode.characters = prevCharacters;
-                    currentNode.x = nextX;
-                    currentNode.y = nextY;
 
                     nextX = initX;
                     nextY += currentNode.height;
 
+                    // This case is that latest sentence was end with max width.
                     if (currentNode.characters === "") {
                         currentNode.x = nextX;
                         currentNode.y = nextY;
@@ -122,16 +121,20 @@ function admitConvert(selection: SelectionNode, converts: ConvertData[]) {
                         continue;
                     }
 
+                    selection.parentNode.appendChild(currentNode);
+
                     const newNode = currentNode.clone();
                     newNode.characters = currentCharacters[j];
-                    selection.parentNode.appendChild(newNode);
+                    newNode.x = nextX;
+                    newNode.y = nextY;
                     currentNode = newNode;
                 }
             }
 
-            // set position
-            currentNode.x = nextX;
-            currentNode.y = nextY;
+            // add to parent
+            if (currentNode !== selectedNode) {
+                selection.parentNode.appendChild(currentNode);
+            }
 
             // generate new node
             if (!isLastCharacter) {
@@ -140,10 +143,11 @@ function admitConvert(selection: SelectionNode, converts: ConvertData[]) {
 
                 // create new node and insert
                 const newNode = currentNode.clone();
-                selection.parentNode.appendChild(newNode);
 
                 // initial setting new node
                 newNode.characters = character;
+                newNode.x = nextX;
+                newNode.y = nextY;
                 prevFontData = currentFontData;
                 currentNode = newNode;
             }

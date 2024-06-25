@@ -48,9 +48,10 @@ export async function getSelectionTexts(sceneNodes: readonly SceneNode[], parent
         else if (sceneNode.type === "GROUP") {
             currentParentNode = sceneNode as GroupNode;
         }
-        else if (sceneNode.type === "INSTANCE") {
-            currentParentNode = sceneNode as InstanceNode;
-        }
+        // Instance node type cannot resolve constraint problem...
+        // else if (sceneNode.type === "INSTANCE") {
+        //     currentParentNode = sceneNode as InstanceNode;
+        // }
 
         if (currentParentNode !== null && currentParentNode.children.length) {
             const childSelectionTexts = await getSelectionTexts(currentParentNode.children, currentParentNode);
