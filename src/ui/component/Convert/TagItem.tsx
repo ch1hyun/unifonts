@@ -12,7 +12,7 @@ function TagItem(props) {
 
     return (
         <>
-        <button className={`button tag margin-right-5 hover-pointer ${additionalClassName}`} style={{backgroundColor: tag.color}} onClick={() => handleClick(tag.id)}>
+        <button className={`button tag margin-right-5 hover-pointer overflow-hidden ${additionalClassName}`} style={{backgroundColor: tag.color}} onClick={() => handleClick(tag.id)}>
             <blockquote>
                 {tag.name}
             </blockquote>

@@ -81,7 +81,10 @@ input:focus {
     outline: 3px solid var(--focus-color);
 }
 
-
+blockquote {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
 
 .disabled {
     position: absolute;
@@ -159,8 +162,7 @@ input:focus {
 
 .button {
     width: fit-content;
-    max-width: 100px;
-    height: 30px;
+    height: 25px;
 
     text-overflow: ellipsis;
     padding: 5px 9px;
