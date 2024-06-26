@@ -10,15 +10,12 @@ var logger = function()
     var pub = {
       enableLogger: function enableLogger() {
         if(oldConsoleLog == null) {
-          console.log("here");
           return;
         }
         window['console']['log'] = oldConsoleLog;
       },
       disableLogger: function disableLogger() {
-        console.log("here");
         oldConsoleLog = console.log;
-        console.log(oldConsoleLog);
         window['console']['log'] = function() {};
       }
     };

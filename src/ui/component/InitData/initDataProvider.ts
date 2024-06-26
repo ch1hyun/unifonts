@@ -1,5 +1,5 @@
 import { Tag } from "../../../shared/dto";
-import * as fs from 'fs';
+import tagsData from "./tag.json";
 
 const TAG_FILE_NAME = 'tag.json';
 const FILE_TYPE_UTF8 = 'utf8';
@@ -7,11 +7,9 @@ const FILE_TYPE_UTF8 = 'utf8';
 export function getInitialTagData(): Tag[] {
     let tags: Tag[] = [];
 
-    let fileContent = fs.readFileSync(TAG_FILE_NAME, FILE_TYPE_UTF8);
-    let tagsJson: Tag[] = JSON.parse(fileContent);
 
     let tagId = 1;
-    tagsJson.map(tj => tags.push({
+    (tagsData as Tag[]).map(tj => tags.push({
         ...tj,
         id: tagId++
     }));

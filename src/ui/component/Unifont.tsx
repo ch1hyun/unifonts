@@ -358,7 +358,11 @@ function Unifont() {
 
     let ret = (<><p>Error</p></>);
 
-    if (page === "main") {
+    if (tags.length === 0) {
+        ret = (
+            <><p>Loading Data...</p></>
+        );
+    } else if (page === "main") {
         ret = (
             <>
             <UnifontContext.Provider value={{
