@@ -1,6 +1,6 @@
 import React, { createContext, useState } from 'react';
 import { ExceptionTypes, MessagePayload, RequestTypes } from '../shared/network-type';
-import { ConvertInfo, InitialInfo } from '../shared/dto';
+import { ConvertInfo, InitialInfo, UnicodeType } from '../shared/dto';
 import Unifont from './component/Unifont';
 import { requestToPlugin } from './lib/network/request';
 
@@ -28,9 +28,7 @@ export const InitContext = createContext(null);
 
 function App() {
   // Start App
-  console.log("==================== Unifonts Started ====================");
-  console.log("================== Disable Console Logs ==================");
-  logger.disableLogger();
+  disableConsole();
 
   const [init, setInit] = useState<InitialInfo>(null);
   
@@ -53,6 +51,12 @@ function App() {
         });
         break;
     }
+  }
+
+  function disableConsole() {
+    console.log("==================== Unifonts Started ====================");
+    console.log("================== Disable Console Logs ==================");
+    logger.disableLogger();
   }
 
   function enableConsole() {

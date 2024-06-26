@@ -4,7 +4,7 @@ import EditConvert from './Convert/EditConvert';
 import Footer from './Footer';
 import { InitContext } from '../App';
 import { DefaultNumber, DefaultTagType, FontData, Tag, TagType, Unicode, UnicodeType } from '../../shared/dto';
-import { DefaultUIConvertData, UIConvertData, UITagMap } from './dto';
+import { DefaultUIConvertData, UIConvertData, UIConvertType, UITagMap } from './dto';
 import TagList from './Tag/TagList';
 import EditTag from './Tag/EditTag';
 import { generateConvertInfo } from '../lib/network/parseData';
@@ -34,7 +34,7 @@ function Unifont() {
     const [tags, setTags] = useState<Tag[]>([]);
     const [defaultConvert, setDefaultConvert] = useState<UIConvertData>({
         id: 1,
-        type: "default",
+        type: UIConvertType.Default,
         tags: [1],
         font: init.selection.defaultFont
     });
@@ -53,7 +53,7 @@ function Unifont() {
     useEffect(() => {
         if (selected === null) return;
 
-        if (selected.type === "general") {
+        if (selected.type === UIConvertType.General) {
             const idx = converts.map(c => c.id).indexOf(selected.id);
             setConverts([
                 ...converts.slice(0, idx),
@@ -61,7 +61,7 @@ function Unifont() {
                 ...converts.slice(idx + 1)
             ]);
         }
-        else if (selected.type === "default") {
+        else if (selected.type === UIConvertType.Default) {
             setDefaultConvert(selected);
         }
     }, [selected]);
@@ -118,7 +118,7 @@ function Unifont() {
             const newItem: UIConvertData = {
                 ...DefaultUIConvertData,
                 id: convertId.current++,
-                type: "general",
+                type: UIConvertType.General,
                 font: defaultConvert.font
             };
 
@@ -143,7 +143,7 @@ function Unifont() {
         setSelected(null);
     }
 
-    function getTagMap(id) {
+    function getTagMap(id: number) {
         let res = tagMap.current.filter(tm => tm.tagId === id);
 
         if (res.length === 0) {
@@ -158,7 +158,7 @@ function Unifont() {
         return res[0];
     }
 
-    function addTag(id) {
+    function addTag(id: number) {
         if (selected === null) return;
         if (selected.tags.filter(tagId => tagId === id).length !== 0) return;
 
@@ -173,7 +173,7 @@ function Unifont() {
         getTagMap(id).convertDataId.push(selected.id);
     }
 
-    function deleteTag(id) {
+    function deleteTag(id: number) {
         if (selected === null) return;
 
         const idx = selected.tags.indexOf(id);

@@ -1,8 +1,9 @@
 import { DefaultFontDataType, DefaultNumber, FontData, Tag } from "../../shared/dto";
 
-export type GeneralConvert = "general";
-export type DefaultConvert = "default";
-export type UIConvertType = GeneralConvert | DefaultConvert;
+export enum UIConvertType {
+    Default = "Default",
+    General = "General",
+};
 
 export type UIConvertData = {
     id: number;
@@ -13,7 +14,7 @@ export type UIConvertData = {
 
 export const DefaultUIConvertData: UIConvertData = {
     id: DefaultNumber,
-    type: "general",
+    type: UIConvertType.General,
     tags: [],
     font: {
         ...DefaultFontDataType

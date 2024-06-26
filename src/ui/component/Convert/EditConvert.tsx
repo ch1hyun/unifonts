@@ -1,10 +1,9 @@
 import { useContext } from "react";
 import { Tag } from "../../../shared/dto";
 import { UnifontContext } from "../Unifont";
-import { UIConvertData } from "../dto";
+import { UIConvertData, UIConvertType } from "../dto";
 import TagBox from "./TagBox";
 import FontBox from "./FontBox";
-import { formatFontData } from "../../../shared/font";
 
 function EditConvert() {
 
@@ -20,7 +19,7 @@ function EditConvert() {
     }
 
     const selectedTags: Tag[] = tags.filter(t => selected.tags.indexOf(t.id) !== -1);
-    const restrictBox = selected.type === "default" ? (<><div className="restricted-tagbox"></div></>) : (<></>);
+    const restrictBox = selected.type === UIConvertType.Default ? (<><div className="restricted-tagbox"></div></>) : (<></>);
 
     return (
         <>

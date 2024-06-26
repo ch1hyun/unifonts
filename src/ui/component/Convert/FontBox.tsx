@@ -13,8 +13,9 @@ function FontBox() {
     const fonts: FontData[] = useContext(InitContext).init.fonts;
     const [keyword, setKeyword] = useState("");
     
+    const selectedFont = fonts.filter(f => isSameFontData(f, selected.font))[0];
     const fontList = fonts.filter(f => isSearchTarget(f)).map(f => (
-        <FontItem font={f} changeHandler={changeFont} checked={isSameFontData(selected.font, f)}/>
+        <FontItem font={f} changeHandler={changeFont} checked={selectedFont === f}/>
     ));
 
     /* Handler Functions */

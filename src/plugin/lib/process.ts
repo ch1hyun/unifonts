@@ -68,10 +68,7 @@ function admitConvert(selection: SelectionNode, converts: ConvertData[]) {
         let isLastCharacter: boolean = false;
         if (i === characters.length) isLastCharacter = true;
 
-        let character: string = null;
-        if (!isLastCharacter) {
-            character = characters[i];
-        }
+        let character: string = isLastCharacter ? null : characters[i];
 
         // space and basic symbols are inherit previous sentence font.
         let charUnicode = isLastCharacter ? null : character.charCodeAt(0);
@@ -89,10 +86,7 @@ function admitConvert(selection: SelectionNode, converts: ConvertData[]) {
         }
 
         // get font name
-        let currentFontData: FontData = null;
-        if (!isLastCharacter) {
-            currentFontData = getFontData(character.charCodeAt(0), converts);
-        }
+        let currentFontData: FontData = isLastCharacter ? null : getFontData(character.charCodeAt(0), converts);
 
         if (!isLastCharacter && (prevFontData === null || isSameFontName(prevFontData.fontName, currentFontData.fontName))) {
             currentNode.characters += character;

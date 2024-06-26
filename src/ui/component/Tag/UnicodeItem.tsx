@@ -1,6 +1,6 @@
 import { useContext, useRef } from "react";
 import { DefaultNumber, Tag, Unicode, UnicodeType, defaultNumberToDefaultString, defaultStringToDefaultNumber } from "../../../shared/dto";
-import { isHexCodes, isNumeric } from "../../../shared/util";
+import { isHexCodes } from "../../../shared/util";
 import { UnifontContext } from "../Unifont";
 
 function UnicodeItem(props) {

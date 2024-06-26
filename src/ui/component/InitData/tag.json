@@ -5,7 +5,7 @@
         "color": "#676B76",
         "unicodes": [
             {
-                "type": "range",
+                "type": "Range",
                 "from": 0,
                 "to": 1048575
             }
@@ -14,10 +14,10 @@
     {
         "name": "Korean",
         "type": "Default",
-        "color": "#d2d2d2",
+        "color": "#FFFFFF",
         "unicodes": [
             {
-                "type": "range",
+                "type": "Range",
                 "from": 44032,
                 "to": 55203 
             }
@@ -26,15 +26,15 @@
     {
         "name": "English",
         "type": "Default",
-        "color": "#d2d2d2",
+        "color": "#00008B",
         "unicodes": [
             {
-                "type": "range",
+                "type": "Range",
                 "from": 65,
                 "to": 90
             },
             {
-                "type": "range",
+                "type": "Range",
                 "from": 97,
                 "to": 122
             }
@@ -43,10 +43,10 @@
     {
         "name": "Number",
         "type": "Default",
-        "color": "#d2d2d2",
+        "color": "#000000",
         "unicodes": [
             {
-                "type": "range",
+                "type": "Range",
                 "from": 48,
                 "to": 57
             }
@@ -55,10 +55,10 @@
     {
         "name": "Special Symbols",
         "type": "Default",
-        "color": "#d2d2d2",
+        "color": "#FFD500",
         "unicodes": [
             {
-                "type": "range",
+                "type": "Range",
                 "from": 9700,
                 "to": 10175
             }
@@ -67,10 +67,10 @@
     {
         "name": "English - Upper Case",
         "type": "Default",
-        "color": "#d2d2d2",
+        "color": "#FF5675",
         "unicodes": [
             {
-                "type": "range",
+                "type": "Range",
                 "from": 65,
                 "to": 90
             }
@@ -79,10 +79,10 @@
     {
         "name": "English - Lower Case",
         "type": "Default",
-        "color": "#d2d2d2",
+        "color": "#008C8C",
         "unicodes": [
             {
-                "type": "range",
+                "type": "Range",
                 "from": 97,
                 "to": 122
             }
@@ -91,28 +91,28 @@
     {
         "name": "Japanese",
         "type": "Default",
-        "color": "#d2d2d2",
+        "color": "#A30000",
         "unicodes": [
             {
-                "type": "range",
+                "type": "Range",
                 "from": 12353,
                 "to": 12438
             },
             {
-                "type": "single",
+                "type": "Single",
                 "from": 12445
             },
             {
-                "type": "single",
+                "type": "Single",
                 "from": 12446
             },
             {
-                "type": "range",
+                "type": "Range",
                 "from": 12449,
                 "to": 12538
             },
             {
-                "type": "single",
+                "type": "Single",
                 "from": 12540
             }
         ]

@@ -11,7 +11,7 @@ function Input(props) {
 
     /* Handler Functions */
 
-    function handleChange(val) {
+    function handleChange(val: string) {
         if (val.length === 0) {
             if (!inputRef.current.classList.contains("not-valid")) {
                 inputRef.current.classList.add("not-valid");

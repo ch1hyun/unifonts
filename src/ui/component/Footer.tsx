@@ -1,7 +1,5 @@
 import { useContext } from "react";
 import { UnifontContext } from "./Unifont";
-import { requestToPlugin } from "../lib/network/request";
-import { MessagePayload, RequestTypes } from "../../shared/network-type";
 import { InitContext } from "../App";
 
 function Footer() {
@@ -14,7 +12,7 @@ function Footer() {
 
     /* Handler Functions */ 
 
-    function handlePage(name) {
+    function handlePage(name: string) {
         if (
             (
                 page === "main" &&
