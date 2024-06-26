@@ -9,6 +9,8 @@ function Input(props) {
 
     const inputRef = useRef(null);
 
+    /* Handler Functions */
+
     function handleChange(val) {
         if (val.length === 0) {
             if (!inputRef.current.classList.contains("not-valid")) {

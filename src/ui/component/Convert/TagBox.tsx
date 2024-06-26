@@ -11,6 +11,8 @@ function TagBox(props) {
     const addTag = useContext(UnifontContext).addTag;
     const deleteTag = useContext(UnifontContext).deleteTag;
 
+    /* Handler Functions */
+
     let handler = () => {alert("Error")};
     if (type === "selected") handler = deleteTag;
     else if (type === "exists") handler = addTag;

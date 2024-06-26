@@ -12,9 +12,13 @@ function UnicodeItem(props) {
     const item: Unicode = props.unicode;
     const itemIdx: number = props.index;
 
+    /* Refs */
+
     const fromRef = useRef(null);
     const toRef = useRef(null);
     const deleteBtn = useRef(null);
+
+    /* Handler Functions */
 
     function handleEnter() {
         if (deleteBtn.current.classList.contains("hidden")) {

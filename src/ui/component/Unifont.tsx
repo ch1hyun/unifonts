@@ -2,199 +2,54 @@ import { createContext, useContext, useEffect, useRef, useState } from 'react';
 import ConvertList from './Convert/ConvertList';
 import EditConvert from './Convert/EditConvert';
 import Footer from './Footer';
-import './Unifont.css'
 import { InitContext } from '../App';
-import { DefaultNumber, DefaultTagType, DefaultUnicodeType, FontData, Tag, Unicode } from '../../shared/dto';
+import { DefaultNumber, DefaultTagType, FontData, Tag, Unicode } from '../../shared/dto';
 import { DefaultUIConvertData, UIConvertData, UITagMap } from './dto';
 import TagList from './Tag/TagList';
 import EditTag from './Tag/EditTag';
 import { generateConvertInfo } from '../lib/network/parseData';
+import { getInitialTagData } from './InitData/initDataProvider';
+import './Unifont.css'
 
 export const UnifontContext = createContext(null);
 
 function Unifont() {
 
     /* Init */
+
     const init = useContext(InitContext).init;
     if (init === null) return (<><span>Loading Data...</span></>);
     const fonts: FontData[] = init.fonts;
     const process = useContext(InitContext).process;
 
     /* Refs */
-    const convertId = useRef(2);
-    const tagId= useRef(9);
 
-    /* States */
-    const [page, setPage] = useState("main");
-    const [tags, setTags] = useState<Tag[]>([
-        {
-            ...DefaultTagType,
-            id: 1,
-            name: "Default",
-            color: "#676B76",
-            unicodes: [
-                {
-                    ...DefaultUnicodeType,
-                    type: "range",
-                    from: 0,
-                    to: 0x1FFFF // In fact, don't need value
-                }
-            ]
-        },
-        {
-            ...DefaultTagType,
-            id: 2,
-            name: "Korean",
-            color: "#d2d2d2",
-            unicodes: [
-                {
-                    ...DefaultUnicodeType,
-                    type: "range",
-                    from: 0xAC00,
-                    to: 0xD7A3 
-                }
-            ]
-        },
-        {
-            ...DefaultTagType,
-            id: 3,
-            name: "English",
-            color: "#d2d2d2",
-            unicodes: [
-                {
-                    ...DefaultUnicodeType,
-                    type: "range",
-                    from: 0x0041,
-                    to: 0x005A
-                },
-                {
-                    ...DefaultUnicodeType,
-                    type: "range",
-                    from: 0x0061,
-                    to: 0x007A
-                }
-            ]
-        },
-        {
-            ...DefaultTagType,
-            id: 4,
-            name: "Number",
-            color: "#d2d2d2",
-            unicodes: [
-                {
-                    ...DefaultUnicodeType,
-                    type: "range",
-                    from: 0x0030,
-                    to: 0x0039
-                }
-            ]
-        },
-        {
-            ...DefaultTagType,
-            id: 5,
-            name: "Special Symbol",
-            color: "#d2d2d2",
-            unicodes: [
-                {
-                    ...DefaultUnicodeType,
-                    type: "range",
-                    from: 0x0020,
-                    to: 0x002F
-                },
-                {
-                    ...DefaultUnicodeType,
-                    type: "range",
-                    from: 0x003A,
-                    to: 0x0040
-                },
-                {
-                    ...DefaultUnicodeType,
-                    type: "range",
-                    from: 0x005B,
-                    to: 0x0060
-                },
-                {
-                    ...DefaultUnicodeType,
-                    type: "range",
-                    from: 0x007B,
-                    to: 0x007E
-                }
-            ]
-        },
-        {
-            ...DefaultTagType,
-            id: 6,
-            name: "English - Upper Case",
-            color: "#d2d2d2",
-            unicodes: [
-                {
-                    type: "range",
-                    from: 0x0041,
-                    to: 0x005A
-                }
-            ]
-        },
-        {
-            ...DefaultTagType,
-            id: 7,
-            name: "English - Lower Case",
-            color: "#d2d2d2",
-            unicodes: [
-                {
-                    type: "range",
-                    from: 0x0061,
-                    to: 0x007A
-                }
-            ]
-        },
-        {
-            ...DefaultTagType,
-            id: 8,
-            name: "Japanese",
-            color: "#d2d2d2",
-            unicodes: [
-                // hiragana
-                {
-                    type: "range",
-                    from: 0x3041,
-                    to: 0x3096
-                },
-                {
-                    type: "single",
-                    from: 0x309D
-                },
-                {
-                    type: "single",
-                    from: 0x309E
-                },
-                // katakana
-                {
-                    type: "range",
-                    from: 0x30A1,
-                    to: 0x30Fa
-                },
-                {
-                    type: "single",
-                    from: 0x30FC
-                }
-            ]
-        }
-    ]);
+    const convertId = useRef(2);
+    const tagId= useRef(1);
     const tagMap = useRef<UITagMap[]>([]);
 
+    /* States */
+
+    const [page, setPage] = useState("main");
+    const [tags, setTags] = useState<Tag[]>([]);
     const [defaultConvert, setDefaultConvert] = useState<UIConvertData>({
         id: 1,
         type: "default",
         tags: [1],
         font: init.selection.defaultFont
     });
-
     const [converts, setConverts] = useState<UIConvertData[]>([]);
-
     const [selected, setSelected] = useState<UIConvertData>(null);
     const [selectedTag, setSelectedTag] = useState<Tag>(null);
 
     /* Effects */
+
+    useEffect(() => {
+        let initTags = getInitialTagData();
+        setTags(initTags);
+        tagId.current = initTags.length + 1;
+    }, []);
+
     useEffect(() => {
         if (selected === null) return;
 
@@ -231,6 +86,7 @@ function Unifont() {
     }, [page]);
 
     /* Handler Functions */
+
     function isValidSelected(): boolean {
         if (selected !== null && selected.tags.length === 0) {
             alert("Must select tag at least 1.");
@@ -497,26 +353,54 @@ function Unifont() {
         );
     }
 
+
+    /* Returns */
+
+    let ret = (<><p>Error</p></>);
+
+    if (page === "main") {
+        ret = (
+            <>
+            <UnifontContext.Provider value={{
+                    page, defaultConvert, converts, tags, selected, selectedTag,
+                    setPage, setSelect, addConvert, deleteConvert, addTag, deleteTag, changeFont, isValidSelected, isValidSelectedTag,
+                    setSelectTag, changeSelectedTagName,
+                    changeSelectedTagColor, addSelectedTagUnicode, deleteSelectedTagUnicode, updateSelectedTagUnicode,
+                    addTagItem, deleteTagItem,
+                    requestConvertEntry
+                }}>
+                <div className={`container flex-row flex-grow padding`}>
+                    <ConvertList/>
+                    <EditConvert/>
+                </div>
+                <Footer/>
+            </UnifontContext.Provider>
+            </>
+        );
+    } else if (page === "tag") {
+        ret = (
+            <>
+            <UnifontContext.Provider value={{
+                    page, defaultConvert, converts, tags, selected, selectedTag,
+                    setPage, setSelect, addConvert, deleteConvert, addTag, deleteTag, changeFont, isValidSelected, isValidSelectedTag,
+                    setSelectTag, changeSelectedTagName,
+                    changeSelectedTagColor, addSelectedTagUnicode, deleteSelectedTagUnicode, updateSelectedTagUnicode,
+                    addTagItem, deleteTagItem,
+                    requestConvertEntry
+                }}>
+                <div className={`container flex-row flex-grow padding`}>
+                    <TagList/>
+                    <EditTag/>
+                </div>
+                <Footer/>
+            </UnifontContext.Provider>
+            </>
+        );
+    }
+
     return (
         <>
-        <UnifontContext.Provider value={{
-                page, defaultConvert, converts, tags, selected, selectedTag,
-                setPage, setSelect, addConvert, deleteConvert, addTag, deleteTag, changeFont, isValidSelected, isValidSelectedTag,
-                setSelectTag, changeSelectedTagName,
-                changeSelectedTagColor, addSelectedTagUnicode, deleteSelectedTagUnicode, updateSelectedTagUnicode,
-                addTagItem, deleteTagItem,
-                requestConvertEntry
-            }}>
-            <div className={`container flex-row flex-grow padding ${page !== "main" ? "hidden" : ""}`}>
-                <ConvertList/>
-                <EditConvert/>
-            </div>
-            <div className={`container flex-row flex-grow padding ${page !== "tag" ? "hidden" : ""}`}>
-                <TagList/>
-                <EditTag/>
-            </div>
-            <Footer/>
-        </UnifontContext.Provider>
+        {ret}
         </>
     );
 }

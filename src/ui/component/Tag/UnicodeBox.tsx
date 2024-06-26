@@ -12,6 +12,8 @@ function UnicodeBox(props) {
         <UnicodeItem unicode={u} index={i}/>
     ))
 
+    /* Handler Functions */
+
     function addUnicode() {
         addSelectedTagUnicode({
             ...DefaultUnicodeType

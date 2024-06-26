@@ -2,6 +2,12 @@
 export const DefaultNumber: number = -1;
 export const DefaultString: string = "";
 
+/* Types */
+export enum TagType {
+    Default = 'Default',
+    Custom = 'Custom',
+};
+
 /* Unicodes */
 export type EmptyType = "empty";
 export type SingleType = "single";
@@ -22,12 +28,14 @@ export const DefaultUnicodeType: Unicode = {
 
 export type Tag = {
     id: number;
+    type: TagType;
     name: string;
     color: string;
     unicodes: Unicode[];
 };
 export const DefaultTagType: Tag = {
     id: DefaultNumber,
+    type: TagType.Custom,
     name: DefaultString,
     color: DefaultString,
     unicodes: [{

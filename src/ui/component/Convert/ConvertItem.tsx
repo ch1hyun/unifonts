@@ -9,11 +9,16 @@ function ConvertItem(props) {
     const additionalClassName = props.className;
     const setSelect = useContext(UnifontContext).setSelect;
     const deleteConvert = useContext(UnifontContext).deleteConvert;
+    
+    /* Refs */
+
+    const deleteBtn = useRef(null);
 
     const tagList = item.tags.map(tagId => (
         <TagItem tagId={tagId}/>
     ))
-    const deleteBtn = useRef(null);
+
+    /* Handler Functions */
 
     function handleEnter() {
         if (item.id === 1) return;
@@ -32,6 +37,7 @@ function ConvertItem(props) {
     return (
         <>
         <li
+            key={item.id}
             className={`item container flex-column hover-pointer hover-bg ${additionalClassName}`}
             onClick={() => setSelect(item.id)}
             onMouseEnter={() => handleEnter()}

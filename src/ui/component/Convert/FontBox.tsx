@@ -13,6 +13,12 @@ function FontBox() {
     const fonts: FontData[] = useContext(InitContext).init.fonts;
     const [keyword, setKeyword] = useState("");
     
+    const fontList = fonts.filter(f => isSearchTarget(f)).map(f => (
+        <FontItem font={f} changeHandler={changeFont} checked={isSameFontData(selected.font, f)}/>
+    ));
+
+    /* Handler Functions */
+
     function isSearchTarget(font: FontData): boolean {
         if (keyword.length === 0) return true;
 
@@ -30,10 +36,6 @@ function FontBox() {
 
         return false;
     }
-
-    const fontList = fonts.filter(f => isSearchTarget(f)).map(f => (
-        <FontItem font={f} changeHandler={changeFont} checked={isSameFontData(selected.font, f)}/>
-    ));
 
     return (
         <>

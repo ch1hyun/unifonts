@@ -12,6 +12,8 @@ function Footer() {
     const close = useContext(InitContext).close;
     const requestConvertEntry = useContext(UnifontContext).requestConvertEntry;
 
+    /* Handler Functions */ 
+
     function handlePage(name) {
         if (
             (
@@ -34,10 +36,12 @@ function Footer() {
         setPage(name);
     }
 
+    /* Returns */
+
+    let ret = (<><p>Error</p></>);
 
     if (page === "main") {
-        return (
-            <>
+        ret = (
             <div className="footer flex-row border-top padding">
                 <div className="container flex-row flex-1 align-center">
                     <button className="button" onClick={() => close()}>
@@ -53,12 +57,9 @@ function Footer() {
                     </button>
                 </div>
             </div>
-            </>
         );
-    }
-    else if (page === "tag") {
-        return (
-            <>
+    } else if (page === "tag") {
+        ret = (
                 <div className="footer flex-row border-top padding">
                     <div className="container flex-row flex-1 align-center">
                         <button className="button" onClick={() => handlePage("main")}>
@@ -66,16 +67,14 @@ function Footer() {
                         </button>
                     </div>
                 </div>
-            </>
         );
     }
-    else {
-        return (
-            <>
-            <p>Error</p>
-            </>
-        );
-    }
+
+    return (
+        <>
+        {ret}
+        </>
+    );
 }
 
 export default Footer

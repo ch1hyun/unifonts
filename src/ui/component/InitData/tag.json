@@ -1,0 +1,108 @@
+[
+    {
+        "name": "Default",
+        "type": "Deafult",
+        "color": "#676B76",
+        "unicodes": [
+            {
+                "type": "range",
+                "from": 0,
+                "to": 1048575
+            }
+        ]
+    },
+    {
+        "name": "Korean",
+        "type": "Deafult",
+        "color": "#d2d2d2",
+        "unicodes": [
+            {
+                "type": "range",
+                "from": 44032,
+                "to": 55203 
+            }
+        ]
+    },
+    {
+        "name": "English",
+        "type": "Deafult",
+        "color": "#d2d2d2",
+        "unicodes": [
+            {
+                "type": "range",
+                "from": 65,
+                "to": 90
+            },
+            {
+                "type": "range",
+                "from": 97,
+                "to": 122
+            }
+        ]
+    },
+    {
+        "name": "Number",
+        "type": "Deafult",
+        "color": "#d2d2d2",
+        "unicodes": [
+            {
+                "type": "range",
+                "from": 48,
+                "to": 57
+            }
+        ]
+    },
+    {
+        "name": "English - Upper Case",
+        "type": "Deafult",
+        "color": "#d2d2d2",
+        "unicodes": [
+            {
+                "type": "range",
+                "from": 65,
+                "to": 90
+            }
+        ]
+    },
+    {
+        "name": "English - Lower Case",
+        "type": "Deafult",
+        "color": "#d2d2d2",
+        "unicodes": [
+            {
+                "type": "range",
+                "from": 97,
+                "to": 122
+            }
+        ]
+    },
+    {
+        "name": "Japanese",
+        "type": "Deafult",
+        "color": "#d2d2d2",
+        "unicodes": [
+            {
+                "type": "range",
+                "from": 12353,
+                "to": 12438
+            },
+            {
+                "type": "single",
+                "from": 12445
+            },
+            {
+                "type": "single",
+                "from": 12446
+            },
+            {
+                "type": "range",
+                "from": 12449,
+                "to": 12538
+            },
+            {
+                "type": "single",
+                "from": 12540
+            }
+        ]
+    }
+]
