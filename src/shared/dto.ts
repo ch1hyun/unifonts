@@ -9,19 +9,20 @@ export enum TagType {
 };
 
 /* Unicodes */
-export type EmptyType = "empty";
-export type SingleType = "single";
-export type RangeType = "range";
-export type DefaultType = "default";
-export type UnicodeTypes = EmptyType | SingleType | RangeType | DefaultType;
+export enum UnicodeType {
+    Empty = 'Empty',
+    Default = 'Default',
+    Single = 'Single',
+    Range = 'Range',
+};
 
 export type Unicode = {
-    type: UnicodeTypes;
+    type: UnicodeType;
     from?: number;
     to?: number;
 };
 export const DefaultUnicodeType: Unicode = {
-    type: "empty",
+    type: UnicodeType.Empty,
     from: DefaultNumber,
     to: DefaultNumber
 };
@@ -108,11 +109,17 @@ export type InitialInfo = {
 export function isSameUnicode(o: Unicode, t: Unicode): boolean {
     if (o.type !== t.type) return false;
     if (
-        o.type === "single" &&
+        o.type === UnicodeType.Empty ||
+        t.type === UnicodeType.Empty ||
+        o.type === UnicodeType.Default ||
+        t.type === UnicodeType.Default
+    ) return false;
+    if (
+        o.type === UnicodeType.Single &&
         o.from !== t.from
     ) return false;
     if (
-        o.type === "range" &&
+        o.type === UnicodeType.Range &&
         (
             o.from !== t.from ||
             o.to !== t.to
@@ -124,8 +131,7 @@ export function isSameUnicode(o: Unicode, t: Unicode): boolean {
 
 export function isSameLocalStyle(o: LocalStyle, t: LocalStyle): boolean {
     return (
-        o.id === t.id &&
-        o.name === t.name
+        o.id === t.id
     );
 }
 

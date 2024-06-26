@@ -3,7 +3,7 @@ import ConvertList from './Convert/ConvertList';
 import EditConvert from './Convert/EditConvert';
 import Footer from './Footer';
 import { InitContext } from '../App';
-import { DefaultNumber, DefaultTagType, FontData, Tag, Unicode } from '../../shared/dto';
+import { DefaultNumber, DefaultTagType, FontData, Tag, Unicode, UnicodeType } from '../../shared/dto';
 import { DefaultUIConvertData, UIConvertData, UITagMap } from './dto';
 import TagList from './Tag/TagList';
 import EditTag from './Tag/EditTag';
@@ -213,9 +213,9 @@ function Unifont() {
             selectedTag !== null &&
             (
                 selectedTag.name.length === 0 ||
-                selectedTag.unicodes.filter(u => u.type === "empty").length > 0 ||
-                selectedTag.unicodes.filter(u => u.type === "single" && u.from === DefaultNumber).length > 0 ||
-                selectedTag.unicodes.filter(u => u.type === "range" && u.from >= u.to).length > 0
+                selectedTag.unicodes.filter(u => u.type === UnicodeType.Empty).length > 0 ||
+                selectedTag.unicodes.filter(u => u.type === UnicodeType.Single && u.from === DefaultNumber).length > 0 ||
+                selectedTag.unicodes.filter(u => u.type === UnicodeType.Range && u.from >= u.to).length > 0
             )
         ) {
             alert("Invalid values");

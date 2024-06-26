@@ -1,5 +1,5 @@
 import { getSelectionTexts } from "..";
-import { ConvertData, ConvertInfo, FontData } from "../../shared/dto";
+import { ConvertData, ConvertInfo, FontData, UnicodeType } from "../../shared/dto";
 import { isSameFontName } from "../../shared/font";
 import { SelectionNode } from "./dto";
 
@@ -159,17 +159,17 @@ function getFontData(targetUnicode: number, converts: ConvertData[]): FontData {
     for (const convert of converts) {
         for (const unicode of convert.unicodes) {
             switch (unicode.type) {
-                case "single":
+                case UnicodeType.Single:
                     if (targetUnicode === unicode.from) {
                         return convert.font;
                     }
                     break;
-                case "range":
+                case UnicodeType.Range:
                     if (unicode.from <= targetUnicode && targetUnicode <= unicode.to) {
                         return convert.font;
                     }
                     break;
-                case "default":
+                case UnicodeType.Default:
                     return convert.font;
             }
         }

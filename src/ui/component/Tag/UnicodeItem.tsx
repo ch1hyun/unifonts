@@ -1,5 +1,5 @@
 import { useContext, useRef } from "react";
-import { DefaultNumber, Tag, Unicode, UnicodeTypes, defaultNumberToDefaultString, defaultStringToDefaultNumber } from "../../../shared/dto";
+import { DefaultNumber, Tag, Unicode, UnicodeType, defaultNumberToDefaultString, defaultStringToDefaultNumber } from "../../../shared/dto";
 import { isHexCodes, isNumeric } from "../../../shared/util";
 import { UnifontContext } from "../Unifont";
 
@@ -73,14 +73,14 @@ function UnicodeItem(props) {
     function update() {
         let fromVal: number = defaultStringToDefaultNumber(fromRef.current.value.trim());
         let toVal: number = defaultStringToDefaultNumber(toRef.current.value.trim());
-        let type: UnicodeTypes = "empty";
+        let type: UnicodeType = UnicodeType.Empty;
 
-        if (fromVal !== DefaultNumber) type = "single";
-        if (type === "single" && toVal !== DefaultNumber) type = "range";
+        if (fromVal !== DefaultNumber) type = UnicodeType.Single;
+        if (type === UnicodeType.Single && toVal !== DefaultNumber) type = UnicodeType.Range; 
 
-        if (type === "empty" ||
-            (type === "single" && fromVal === DefaultNumber) ||
-            (type === "range" && fromVal >= toVal)
+        if (type === UnicodeType.Empty ||
+            (type === UnicodeType.Single && fromVal === DefaultNumber) ||
+            (type === UnicodeType.Range && fromVal >= toVal)
         ) {
             fromInvalid(); toInvalid();
         } else {
@@ -107,7 +107,7 @@ function UnicodeItem(props) {
         <>
         <div className="item container flex-row align-center flex-justify-center padding border-bottom overflow-hidden" onMouseEnter={() => handleEnter()} onMouseLeave={() => handleLeave()}>
             <span className="margin-right-5 font-bold">U+</span>
-            <input className={`margin-right-5 width-85 ${item.type === "empty" ? "not-valid" : ""}`} type="text" value={defaultNumberToDefaultString(item.from)} placeholder="hex up to 5" ref={fromRef} onChange={() => handleFromChange()} maxLength={5}/>
+            <input className={`margin-right-5 width-85 ${item.type === UnicodeType.Empty ? "not-valid" : ""}`} type="text" value={defaultNumberToDefaultString(item.from)} placeholder="hex up to 5" ref={fromRef} onChange={() => handleFromChange()} maxLength={5}/>
             <span className="margin-right-5 font-bold">-</span>
             <input className="margin-right-5 width-85" type="text" value={defaultNumberToDefaultString(item.to)} placeholder="hex up to 5" ref={toRef} onChange={() => handleToChange()} maxLength={5}/>
             <div className="delete-item hover-pointer hidden" ref={deleteBtn} onClick={() => deleteUnicode()}><span>✕</span></div>
