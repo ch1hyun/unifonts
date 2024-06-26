@@ -54,14 +54,13 @@ function admitConvert(selection: SelectionNode, converts: ConvertData[]) {
     const initY: number = selection.node.y;
 
     /* initial values */
-    const resizeType = "WIDTH_AND_HEIGHT";
     let currentNode: TextNode = selectedNode;
     let prevFontData: FontData = null;
     let nextX: number = initX;
     let nextY: number = initY;
 
     /* initial setting */
-    currentNode.textAutoResize = resizeType;
+    currentNode.textAutoResize = "WIDTH_AND_HEIGHT";
     currentNode.characters = "";
 
     // main stream
@@ -74,7 +73,14 @@ function admitConvert(selection: SelectionNode, converts: ConvertData[]) {
             character = characters[i];
         }
 
-        if (character === " ") {
+        // space and basic symbols are inherit previous sentence font.
+        let charUnicode = character.charCodeAt(0);
+        if (
+            (0x20 <= charUnicode && charUnicode <= 0x2F) ||
+            (0x3A <= charUnicode && charUnicode <= 0x40) ||
+            (0x5B <= charUnicode && charUnicode <= 0x60) ||
+            (0x7B <= charUnicode && charUnicode <= 0x7E)
+        ) {
             currentNode.characters += character;
             continue;
         }

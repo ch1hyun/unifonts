@@ -53,6 +53,18 @@
         ]
     },
     {
+        "name": "Special Symbols",
+        "type": "Deafult",
+        "color": "#d2d2d2",
+        "unicodes": [
+            {
+                "type": "range",
+                "from": 9700,
+                "to": 10175
+            }
+        ]
+    },
+    {
         "name": "English - Upper Case",
         "type": "Deafult",
         "color": "#d2d2d2",

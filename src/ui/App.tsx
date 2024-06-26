@@ -4,6 +4,7 @@ import { ConvertInfo, InitialInfo } from '../shared/dto';
 import Unifont from './component/Unifont';
 import { requestToPlugin } from './lib/network/request';
 
+/* Console log controller */
 var logger = function()
 {
     var oldConsoleLog = null;
@@ -55,7 +56,6 @@ function App() {
   }
 
   function enableConsole() {
-    // Error Detected
     logger.enableLogger();
     console.log("=================== Enable Console Logs ==================");
     console.log("===================== Unifonts Ended =====================");
