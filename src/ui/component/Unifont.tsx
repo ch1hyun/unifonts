@@ -3,7 +3,7 @@ import ConvertList from './Convert/ConvertList';
 import EditConvert from './Convert/EditConvert';
 import Footer from './Footer';
 import { InitContext } from '../App';
-import { DefaultNumber, DefaultTagType, FontData, Tag, Unicode, UnicodeType } from '../../shared/dto';
+import { DefaultNumber, DefaultTagType, FontData, Tag, TagType, Unicode, UnicodeType } from '../../shared/dto';
 import { DefaultUIConvertData, UIConvertData, UITagMap } from './dto';
 import TagList from './Tag/TagList';
 import EditTag from './Tag/EditTag';
@@ -285,7 +285,8 @@ function Unifont() {
         if (isValidSelectedTag()) {
             const newTag: Tag = {
                 ...DefaultTagType,
-                id: tagId.current++
+                id: tagId.current++,
+                type: TagType.Custom
             };
 
             setTags([

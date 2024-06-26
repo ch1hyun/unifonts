@@ -74,12 +74,15 @@ function admitConvert(selection: SelectionNode, converts: ConvertData[]) {
         }
 
         // space and basic symbols are inherit previous sentence font.
-        let charUnicode = character.charCodeAt(0);
+        let charUnicode = isLastCharacter ? null : character.charCodeAt(0);
         if (
-            (0x20 <= charUnicode && charUnicode <= 0x2F) ||
-            (0x3A <= charUnicode && charUnicode <= 0x40) ||
-            (0x5B <= charUnicode && charUnicode <= 0x60) ||
-            (0x7B <= charUnicode && charUnicode <= 0x7E)
+            charUnicode !== null &&
+            (
+                (0x20 <= charUnicode && charUnicode <= 0x2F) ||
+                (0x3A <= charUnicode && charUnicode <= 0x40) ||
+                (0x5B <= charUnicode && charUnicode <= 0x60) ||
+                (0x7B <= charUnicode && charUnicode <= 0x7E)
+            )
         ) {
             currentNode.characters += character;
             continue;

@@ -84,6 +84,7 @@ input:focus {
 blockquote {
     overflow: hidden;
     text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .disabled {

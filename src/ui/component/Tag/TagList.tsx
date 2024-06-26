@@ -1,7 +1,7 @@
 import { useContext } from "react";
 import { UnifontContext } from "../Unifont";
 import TagItem from "../Convert/TagItem";
-import { Tag } from "../../../shared/dto";
+import { Tag, TagType } from "../../../shared/dto";
 import TagFooter from "./TagFooter";
 
 function TagList() {
@@ -11,7 +11,7 @@ function TagList() {
     const setSelectTag = useContext(UnifontContext).setSelectTag;
     const addTagItem = useContext(UnifontContext).addTagItem;
 
-    const tagList = tags.map(t => (
+    const tagList = tags.filter(t => t.type !== TagType.Default).map(t => (
         <TagItem tagId={t.id} className={`margin-bottom-5 ${selectedTag !== null && selectedTag.id === t.id ? "tag-select" : ""}`} clickHandler={setSelectTag}/>
     ));
 
