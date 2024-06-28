@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { InitContext } from "../../App";
 import { FontData } from "../../../shared/dto";
 import { formatFontData, formatFontName, isSameFontData } from "../../../shared/font";
@@ -13,9 +13,8 @@ function FontBox() {
     const fonts: FontData[] = useContext(InitContext).init.fonts;
     const [keyword, setKeyword] = useState("");
     
-    const selectedFont = fonts.filter(f => isSameFontData(f, selected.font))[0];
-    const fontList = fonts.filter(f => isSearchTarget(f)).map(f => (
-        <FontItem font={f} changeHandler={changeFont} checked={selectedFont === f}/>
+    const fontList = fonts.map(f => (
+        <FontItem font={f} changeHandler={changeFont} checked={selected.font.id === f.id} hidden={!isSearchTarget(f)}/>
     ));
 
     /* Handler Functions */

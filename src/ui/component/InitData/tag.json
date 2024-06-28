@@ -18,8 +18,28 @@
         "unicodes": [
             {
                 "type": "Range",
+                "from": 4352,
+                "to": 4607
+            },
+            {
+                "type": "Range",
+                "from": 12592,
+                "to": 12687
+            },
+            {
+                "type": "Range",
+                "from": 43360,
+                "to": 43391
+            },
+            {
+                "type": "Range",
                 "from": 44032,
                 "to": 55203 
+            },
+            {
+                "type": "Range",
+                "from": 55216,
+                "to": 55295
             }
         ]
     },
