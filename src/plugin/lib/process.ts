@@ -1,6 +1,6 @@
 import { getSelectionTexts } from "..";
 import { ConvertData, ConvertInfo, FontData, UnicodeType } from "../../shared/dto";
-import { isSameFontName } from "../../shared/font";
+import { isSameFontData, isSameFontName } from "../../shared/font";
 import { SelectionNode } from "./dto";
 
 export let isProcessing: boolean = false;
@@ -33,7 +33,7 @@ export async function process(convertInfo: ConvertInfo) {
     // loading fonts
     await loadFonts(convertInfo.fonts);
 
-    admitConvertEntry(selectionNodes, convertInfo.converts);
+   admitConvertEntry(selectionNodes, convertInfo.converts);
 
     setIsProcessing(false);
     exit();
@@ -48,10 +48,10 @@ function admitConvertEntry(selections: SelectionNode[], converts: ConvertData[])
 function admitConvert(selection: SelectionNode, converts: ConvertData[]) {
     /* origin values */
     const selectedNode: TextNode = selection.node;
-    const characters: string = selection.node.characters.trim();
-    const maxWidth: number = selection.node.width;
-    const initX: number = selection.node.x;
-    const initY: number = selection.node.y;
+    const characters: string = selectedNode.characters.trim();
+    const maxWidth: number = selectedNode.width;
+    const initX: number = selectedNode.x;
+    const initY: number = selectedNode.y;
 
     /* initial values */
     let currentNode: TextNode = selectedNode;
@@ -59,100 +59,90 @@ function admitConvert(selection: SelectionNode, converts: ConvertData[]) {
     let nextX: number = initX;
     let nextY: number = initY;
 
+    let isCvtNum: boolean = isConvertNumber(converts);
+    let buffer: Array<string> = [];
+
     /* initial setting */
+    const LINE_FEED = 0x0A;
     currentNode.textAutoResize = "WIDTH_AND_HEIGHT";
     currentNode.characters = "";
 
     // main stream
     for (let i = 0; i <= characters.length; ++i) {
-        let isLastCharacter: boolean = false;
-        if (i === characters.length) isLastCharacter = true;
-
-        let character: string = isLastCharacter ? null : characters[i];
+        // is last?
+        let isLast: boolean = (i == characters.length);
+        let character: string = !isLast ? characters[i] : null;
 
         // space and basic symbols are inherit previous sentence font.
-        let charUnicode = isLastCharacter ? null : character.charCodeAt(0);
-        if (
-            charUnicode !== null &&
-            (
-                (0x20 <= charUnicode && charUnicode <= 0x2F) ||
-                (0x3A <= charUnicode && charUnicode <= 0x40) ||
-                (0x5B <= charUnicode && charUnicode <= 0x60) ||
-                (0x7B <= charUnicode && charUnicode <= 0x7E)
-            )
-        ) {
-            currentNode.characters += character;
+        if (!isLast && isIgnoreCase(character, !isCvtNum)) {
+            buffer.push(character);
             continue;
         }
 
-        // get font name
-        let currentFontData: FontData = isLastCharacter ? null : getFontData(character.charCodeAt(0), converts);
+        let curFontData: FontData = !isLast ? getFontData(character.charCodeAt(0), converts) : null;
 
-        if (!isLastCharacter && (prevFontData === null || isSameFontName(prevFontData.fontName, currentFontData.fontName))) {
-            currentNode.characters += character;
-            prevFontData = currentFontData;
+        let isSameFD: boolean = (!isLast && character.charCodeAt(0) != LINE_FEED && (prevFontData == null || isSameFontData(prevFontData, curFontData)));
+        if (isSameFD) {
+            buffer.push(character);
+            prevFontData = curFontData;
+            continue;
         }
-        else if (isLastCharacter || !isSameFontName(prevFontData.fontName, currentFontData.fontName)) {
-            // ignore side spaces
-            currentNode.characters = currentNode.characters.trim();
+        // if buffer has one line feed, add empty vertical space
+        if (!isLast && character.charCodeAt(0) == LINE_FEED && buffer.length == 0) {
+            nextY += currentNode.height;
+            currentNode.y = nextY;
+            prevFontData = null;
+            continue;
+        }
 
-            // set font name to node
-            currentNode.fontName = prevFontData.fontName;
-            if (prevFontData.isLocalStyle) {
-                currentNode.textStyleId = prevFontData.localStyle.id;
-            }
+        // set font name to node
+        currentNode.fontName = prevFontData.fontName;
+        if (prevFontData.isLocalStyle) {
+            currentNode.textStyleId = prevFontData.localStyle.id;
+        }
 
-            // if need, split node
-            let currentCharacters = currentNode.characters;
-            currentNode.characters = "";
-            for (let j = 0; j < currentCharacters.length; ++j) {
-                let prevCharacters = currentNode.characters;
-                currentNode.characters += currentCharacters[j];
+        // if characters overflow width, split node
+        let prevCharacters: string;
+        for (const b of buffer) {
+            prevCharacters = currentNode.characters;
+            currentNode.characters += b;
 
-                // split
-                if (nextX - initX + currentNode.width > maxWidth) {
-                    currentNode.characters = prevCharacters;
+            if (currentNode.x - initX + currentNode.width >= maxWidth) {
+                currentNode.characters = prevCharacters;
 
-                    nextX = initX;
-                    nextY += currentNode.height;
+                nextX = initX;
+                nextY += currentNode.height;
 
-                    // This case is that latest sentence was end with max width.
-                    if (currentNode.characters === "") {
-                        currentNode.x = nextX;
-                        currentNode.y = nextY;
-                        currentNode.characters = currentCharacters[j];
-                        continue;
-                    }
-
-                    selection.parentNode.appendChild(currentNode);
-
-                    const newNode = currentNode.clone();
-                    newNode.characters = currentCharacters[j];
-                    newNode.x = nextX;
-                    newNode.y = nextY;
-                    currentNode = newNode;
-                }
-            }
-
-            // add to parent
-            if (currentNode !== selectedNode) {
+                currentNode = currentNode.clone();
+                currentNode.x = nextX;
+                currentNode.y = nextY;
+                currentNode.characters = b;
                 selection.parentNode.appendChild(currentNode);
             }
+        }
 
-            // generate new node
-            if (!isLastCharacter) {
-                // set next x
-                nextX += currentNode.width;
+        if (!isLast) {
+            nextX += currentNode.width;
+            if (character.charCodeAt(0) == LINE_FEED) {
+                nextX = initX;
+                nextY += currentNode.height;
+            }
 
-                // create new node and insert
-                const newNode = currentNode.clone();
+            currentNode = currentNode.clone();
+            currentNode.x = nextX;
+            currentNode.y = nextY;
+            currentNode.characters = "";
+            selection.parentNode.appendChild(currentNode);
 
-                // initial setting new node
-                newNode.characters = character;
-                newNode.x = nextX;
-                newNode.y = nextY;
-                prevFontData = currentFontData;
-                currentNode = newNode;
+            // reset font data
+            prevFontData = null;
+
+            // reset buffer
+            buffer = [];
+
+            if (character.charCodeAt(0) != LINE_FEED) {
+                prevFontData = curFontData;
+                buffer.push(character);
             }
         }
     }
@@ -179,4 +169,39 @@ function getFontData(targetUnicode: number, converts: ConvertData[]): FontData {
     }
 
     return converts[converts.length - 1].font;
+}
+
+function isIgnoreCase(character: string, numberIgnore: boolean = false): boolean {
+    let charUnicode = character.charCodeAt(0);
+
+    if (
+        (0x20 <= charUnicode && charUnicode <= 0x2F) ||
+        (0x3A <= charUnicode && charUnicode <= 0x40) ||
+        (0x5B <= charUnicode && charUnicode <= 0x60) ||
+        (0x7B <= charUnicode && charUnicode <= 0x7E) ||
+        (
+            numberIgnore &&
+            (0x30 <= charUnicode && charUnicode <= 0x39)
+        )
+    ) {
+        return true;
+    }
+
+    return false;
+}
+
+function isConvertNumber(converts: ConvertData[]): boolean {
+    for (const c of converts) {
+        for (const u of c.unicodes) {
+            if (
+                u.type === "Range" &&
+                u.from === 48 &&
+                u.to === 57
+            ) {
+                return true;
+            }
+        }
+    }
+
+    return false;
 }
