@@ -10,6 +10,9 @@ import EditTag from './Tag/EditTag';
 import { generateConvertInfo } from '../lib/network/parseData';
 import { getInitialTagData } from './InitData/initDataProvider';
 import './Unifont.css'
+import { sha256 } from '../lib/crypto';
+import { requestToPlugin } from '../lib/network/request';
+import { RequestTypes } from '../../shared/network-type';
 
 export const UnifontContext = createContext(null);
 
@@ -25,7 +28,6 @@ function Unifont() {
     /* Refs */
 
     const convertId = useRef(2);
-    const tagId= useRef(1);
     const tagMap = useRef<UITagMap[]>([]);
 
     /* States */
@@ -35,7 +37,7 @@ function Unifont() {
     const [defaultConvert, setDefaultConvert] = useState<UIConvertData>({
         id: 1,
         type: UIConvertType.Default,
-        tags: [1],
+        tags: [],
         font: init.selection.defaultFont
     });
     const [converts, setConverts] = useState<UIConvertData[]>([]);
@@ -45,9 +47,12 @@ function Unifont() {
     /* Effects */
 
     useEffect(() => {
-        let initTags = getInitialTagData();
-        setTags(initTags);
-        tagId.current = initTags.length + 1;
+        let initTags: Tag[] = getInitialTagData();
+        setTags(initTags.concat(init.tags as Tag[]));
+        setDefaultConvert({
+            ...defaultConvert,
+            tags: [initTags[0].id]
+        });
     }, []);
 
     useEffect(() => {
@@ -143,7 +148,7 @@ function Unifont() {
         setSelected(null);
     }
 
-    function getTagMap(id: number) {
+    function getTagMap(id: string) {
         let res = tagMap.current.filter(tm => tm.tagId === id);
 
         if (res.length === 0) {
@@ -158,7 +163,7 @@ function Unifont() {
         return res[0];
     }
 
-    function addTag(id: number) {
+    function addTag(id: string) {
         if (selected === null) return;
         if (selected.tags.filter(tagId => tagId === id).length !== 0) return;
 
@@ -173,7 +178,7 @@ function Unifont() {
         getTagMap(id).convertDataId.push(selected.id);
     }
 
-    function deleteTag(id: number) {
+    function deleteTag(id: string) {
         if (selected === null) return;
 
         const idx = selected.tags.indexOf(id);
@@ -225,23 +230,39 @@ function Unifont() {
         return true;
     }
 
-    function setSelectTag(id: number) {
+    function setSelectTag(id: string) {
         if (isValidSelectedTag()) {
             setSelectedTag(tags.filter(t => t.id === id)[0]);
         }
     }
 
     function changeSelectedTagName(name: string) {
-        setSelectedTag({
+        const newTag: Tag = {
             ...selectedTag,
             name: name
+        };
+
+        setSelectedTag(newTag);
+
+        // TODO : Synchronize with client storage
+        requestToPlugin({
+            type: RequestTypes.UPDATE_TAG,
+            data: newTag
         });
     }
 
     function changeSelectedTagColor(color: string) {
-        setSelectedTag({
+        const newTag: Tag = {
             ...selectedTag,
             color: color
+        };
+
+        setSelectedTag(newTag);
+
+        // TODO : Synchronize with client storage
+        requestToPlugin({
+            type: RequestTypes.UPDATE_TAG,
+            data: newTag
         });
     }
 
@@ -271,13 +292,21 @@ function Unifont() {
     }
 
     function updateSelectedTagUnicode(index: number, unicode: Unicode) {
-        setSelectedTag({
+        const newTag: Tag = {
             ...selectedTag,
             unicodes: [
                 ...selectedTag.unicodes.slice(0, index),
                 unicode,
                 ...selectedTag.unicodes.slice(index + 1)
             ]
+        };
+
+        setSelectedTag(newTag);
+
+        // TODO : Synchronize with client storage
+        requestToPlugin({
+            type: RequestTypes.UPDATE_TAG,
+            data: newTag
         });
     }
 
@@ -285,7 +314,7 @@ function Unifont() {
         if (isValidSelectedTag()) {
             const newTag: Tag = {
                 ...DefaultTagType,
-                id: tagId.current++,
+                id: sha256(new Date().toUTCString()),
                 type: TagType.Custom
             };
 
@@ -295,6 +324,12 @@ function Unifont() {
             ]);
 
             setSelectedTag(newTag);
+
+            // TODO : Synchronize with client storage
+            requestToPlugin({
+                type: RequestTypes.ADD_TAG,
+                data: newTag
+            });
         }
     }
 
@@ -305,15 +340,9 @@ function Unifont() {
             "Tag will be delete with related fonts (If font have just one tag[" + selectedTag.name + "], delete)." + 
             "\nContinue?"
         )) {
-            if (tags.length === 2) {
-                alert(
-                    "Must have tag at least one."
-                );
-                return;
-            }
             const tm: UITagMap = getTagMap(selectedTag.id);
 
-            // Delete font if have one tag that selected
+            // If convert item have one tag that same with selected tag, delete convert item
             // else delete selected tag and push
             const newConverts: UIConvertData[] = [];
             converts.map(c => {
@@ -344,6 +373,12 @@ function Unifont() {
                 ...tags.slice(tagIdx + 1)
             ]);
 
+            // TODO : Synchronize with client storage
+            requestToPlugin({
+                type: RequestTypes.DELETE_TAG,
+                data: selectedTag
+            });
+
             setSelectedTag(null);
         }
     }
@@ -354,16 +389,11 @@ function Unifont() {
         );
     }
 
-
     /* Returns */
 
     let ret = (<><p>Error</p></>);
 
-    if (tags.length === 0) {
-        ret = (
-            <><p>Loading Data...</p></>
-        );
-    } else if (page === "main") {
+    if (page === "main") {
         ret = (
             <>
             <UnifontContext.Provider value={{

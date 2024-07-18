@@ -28,7 +28,7 @@ export const InitContext = createContext(null);
 
 function App() {
   // Start App
-  disableConsole();
+  // disableConsole();
 
   const [init, setInit] = useState<InitialInfo>(null);
   
@@ -41,7 +41,6 @@ function App() {
       case RequestTypes.INIT:
         setInit(data as InitialInfo);
         break;
-      
       // Exceptions
       case ExceptionTypes.NO_SELECTION:
         alert("Must select at least one");

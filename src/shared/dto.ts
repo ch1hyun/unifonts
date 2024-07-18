@@ -28,14 +28,14 @@ export const DefaultUnicodeType: Unicode = {
 };
 
 export type Tag = {
-    id: number;
+    id: string;
     type: TagType;
     name: string;
     color: string;
     unicodes: Unicode[];
 };
 export const DefaultTagType: Tag = {
-    id: DefaultNumber,
+    id: DefaultString,
     type: TagType.Custom,
     name: DefaultString,
     color: DefaultString,
@@ -102,6 +102,7 @@ export type ConvertInfo = {
 export type InitialInfo = {
     selection: SelectionData;
     fonts: FontData[];
+    tags: Tag[];
 };
 /* End */
 

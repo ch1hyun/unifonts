@@ -1,5 +1,5 @@
-import { MessagePayload, RequestTypes } from "../../../shared/network-type";
+import { MessagePayload } from "../../../shared/network-type";
 
-export function requestToUI<MessagePayload>(payload: MessagePayload) {
+export function requestToUI(payload: MessagePayload) {
     figma.ui.postMessage(payload);
 }

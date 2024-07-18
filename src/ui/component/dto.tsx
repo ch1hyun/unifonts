@@ -1,4 +1,4 @@
-import { DefaultFontDataType, DefaultNumber, FontData, Tag } from "../../shared/dto";
+import { DefaultFontDataType, DefaultNumber, DefaultString, FontData, Tag } from "../../shared/dto";
 
 export enum UIConvertType {
     Default = "Default",
@@ -8,7 +8,7 @@ export enum UIConvertType {
 export type UIConvertData = {
     id: number;
     type: UIConvertType;
-    tags: number[];
+    tags: string[];
     font: FontData;
 };
 
@@ -22,11 +22,11 @@ export const DefaultUIConvertData: UIConvertData = {
 };
 
 export type UITagMap = {
-    tagId: number;
+    tagId: string;
     convertDataId: number[];
 };
 
 export const DefaultUITagMap: UITagMap = {
-    tagId: DefaultNumber,
+    tagId: DefaultString,
     convertDataId: []
 };

@@ -1,5 +1,6 @@
 [
     {
+        "id": "38B937894ACE4C8E2C7F95C02C92EFF20E952841EF86D8F9AA8AFB6FE7C051D3",
         "name": "Default",
         "type": "Default",
         "color": "#676B76",
@@ -12,6 +13,7 @@
         ]
     },
     {
+        "id": "8065D6CFF54DCC23525531E774A4F8475F22C77F5DE3F1F11CAB6B4226F0F0C2",
         "name": "Korean",
         "type": "Default",
         "color": "#FFFFFF",
@@ -44,6 +46,7 @@
         ]
     },
     {
+        "id": "29F4215F8F59A3B3099F2BB2CFF6FAD8358505EF16418850AF8CFF8709C93F16",
         "name": "English",
         "type": "Default",
         "color": "#00008B",
@@ -61,6 +64,7 @@
         ]
     },
     {
+        "id": "AEC738AB0DF87C52C9B59215BAD3DFF3D55E88AC0A5672A3BF3360AFCE0E51DA",
         "name": "Number",
         "type": "Default",
         "color": "#000000",
@@ -73,6 +77,7 @@
         ]
     },
     {
+        "id": "69D7C8517CDFC56566A71AD90A6DFECF8238BCF6A8A8900D01E025FD9B6FE24E",
         "name": "Special Symbols",
         "type": "Default",
         "color": "#FFD500",
@@ -85,6 +90,7 @@
         ]
     },
     {
+        "id": "80FACC98B5F90475BF9F51C4B8C5377699D5D529016D5B850D69938CE1E7876F",
         "name": "English - Upper Case",
         "type": "Default",
         "color": "#FF5675",
@@ -97,6 +103,7 @@
         ]
     },
     {
+        "id": "F5EDF48AE6CD54C96ABCA9F36758928233F9DCD9FBB7943D6A7C41FDAA96B679",
         "name": "English - Lower Case",
         "type": "Default",
         "color": "#008C8C",
@@ -109,6 +116,7 @@
         ]
     },
     {
+        "id": "C526E7B8351AA8CB8918ED2AD281F85FD0531F36007AF13D52F4B70D90B3B395",
         "name": "Japanese",
         "type": "Default",
         "color": "#A30000",

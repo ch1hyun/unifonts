@@ -2,6 +2,7 @@ import { useContext } from "react";
 import { Tag } from "../../../shared/dto";
 import TagItem from "./TagItem";
 import { UnifontContext } from "../Unifont";
+import { DEFAULT_TAG_ID } from "../InitData/initDataProvider";
 
 function TagBox(props) {
     const type: string = props.type;
@@ -17,7 +18,7 @@ function TagBox(props) {
     if (type === "selected") handler = deleteTag;
     else if (type === "exists") handler = addTag;
 
-    const tagList = tags.filter(t => type !== "exists" || t.id !== 1).map(t => (
+    const tagList = tags.filter(t => type !== "exists" || t.id !== DEFAULT_TAG_ID).map(t => (
         <TagItem tagId={t.id} clickHandler={handler}/>
     ));
 

@@ -56,13 +56,21 @@
     "webpack-cli": "^4.9.2",
     "webpack-merge": "^5.8.0"
   },
+  "browser": {
+    "crypto": false
+  },
   "dependencies": {
     "@emotion/react": "^11.11.4",
+    "@types/crypto-js": "^4.2.2",
+    "crypto": "^1.0.1",
+    "crypto-js": "^4.2.0",
     "fs": "^0.0.1-security",
+    "immer": "^10.1.1",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-icons": "^5.1.0",
-    "styled-components": "^6.1.8"
+    "styled-components": "^6.1.8",
+    "zustand": "^4.5.4"
   },
   "resolutions": {
     "@types/react": "17.0.2",

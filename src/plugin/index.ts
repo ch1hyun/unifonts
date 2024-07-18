@@ -1,9 +1,10 @@
-import { ConvertInfo, FontData, InitialInfo, SelectionData } from "../shared/dto"
-import { ExceptionTypes, MessagePayload, RequestTypes } from "../shared/network-type";
+import { ConvertInfo, FontData, InitialInfo, SelectionData, Tag } from "../shared/dto"
+import { ExceptionTypes, MessagePayload, RequestTypes, StorageKeys } from "../shared/network-type";
 import {  ParentNode, SelectionNode } from "./lib/dto";
 import { constructFontData, generateSelectionData } from "./lib/font-parse";
 import { requestToUI } from "./lib/network/request";
 import { isProcessing, process } from "./lib/process";
+import { addStorageTag, deleteStorageTag, eraseStorageTagIfInvalid, getTags, updateStorageTag } from "./lib/tag";
 
 figma.showUI(__html__);
 
@@ -17,7 +18,7 @@ async function loadFonts() {
         const fonts: FontData[] = constructFontData(availableFonts, localStyles);
         return fonts;
     } catch (error) {
-        console.log("Error Loading Fonts: ", error);
+        console.log("ERROR: Loading Fonts - ", error);
     }
 }
 
@@ -58,7 +59,7 @@ export async function getSelectionTexts(sceneNodes: readonly SceneNode[], parent
     return res;
 }
 
-async function getSelectionData(fonts: FontData[]) {
+async function getSelectionData(fonts: FontData[]): Promise<SelectionData> {
     try {
         const currentSelectionNodes: SelectionNode[] = await getSelectionTexts(figma.currentPage.selection, figma.currentPage);
         if (currentSelectionNodes.length === 0) {
@@ -76,12 +77,17 @@ async function getSelectionData(fonts: FontData[]) {
     }
 }
 
-async function requestInitialInfo(selectionData: SelectionData, fonts: FontData[]) {
+async function getClientStorageTag(): Promise<Tag[]> {
+    return (await getTags());
+}
+
+async function requestInitialInfo(selectionData: SelectionData, fonts: FontData[], tags: Tag[]) {
     requestToUI({
         type: RequestTypes.INIT,
         data: <InitialInfo> {
             selection: selectionData,
-            fonts: fonts
+            fonts: fonts,
+            tags: tags
         }
     });
 }
@@ -89,7 +95,8 @@ async function requestInitialInfo(selectionData: SelectionData, fonts: FontData[
 async function main() {
     const fonts = await loadFonts();
     const selectionData = await getSelectionData(fonts);
-    await requestInitialInfo(selectionData, fonts);
+    const tags = await eraseStorageTagIfInvalid((await getClientStorageTag()));
+    await requestInitialInfo(selectionData, fonts, tags);
 }
 
 main();
@@ -103,6 +110,15 @@ figma.ui.onmessage = async function ({ type, data } : MessagePayload) {
             if (!isProcessing) {
                 await process(data as ConvertInfo);
             }
+            break;
+        case RequestTypes.ADD_TAG:
+            await addStorageTag(data as Tag);
+            break;
+        case RequestTypes.UPDATE_TAG:
+            await updateStorageTag(data as Tag);
+            break;
+        case RequestTypes.DELETE_TAG:
+            await deleteStorageTag(data as Tag);
             break;
     }
 };

@@ -4,7 +4,7 @@ import { UnifontContext } from "../Unifont";
 
 function TagItem(props) {
     const tags: Tag[] = useContext(UnifontContext).tags;
-    const tagId: number = props.tagId;
+    const tagId: string = props.tagId;
     const tag: Tag = tags.filter(t => t.id === tagId)[0];
 
     const additionalClassName:string = props.className;
