@@ -21,14 +21,14 @@ function ConvertItem(props) {
     /* Handler Functions */
 
     function handleEnter() {
-        if (item.id === 1) return;
+        if (item.type === "Default") return;
         if (deleteBtn.current.classList.contains("hidden")) {
             deleteBtn.current.classList.remove("hidden");
         }
     }
 
     function handleLeave() {
-        if (item.id === 1) return;
+        if (item.type === "Default") return;
         if (!deleteBtn.current.classList.contains("hidden")) {
             deleteBtn.current.classList.add("hidden");
         }
@@ -52,8 +52,8 @@ function ConvertItem(props) {
                 </span>
             </div>
             {
-                item.id === 1 ? (<></>) :
-                (<div className="delete-item hover-pointer hidden" ref={deleteBtn} onClick={() => deleteConvert(item.id)}><span>✕</span></div>)
+                item.type === "Default" ? (<></>) :
+                (<div className="delete-item hover-pointer hidden" ref={deleteBtn} onClick={(e) => deleteConvert(e, item.id)}><span>✕</span></div>)
             }
         </li>
         </>

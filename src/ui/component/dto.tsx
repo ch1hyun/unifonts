@@ -6,14 +6,14 @@ export enum UIConvertType {
 };
 
 export type UIConvertData = {
-    id: number;
+    id: string;
     type: UIConvertType;
     tags: string[];
     font: FontData;
 };
 
 export const DefaultUIConvertData: UIConvertData = {
-    id: DefaultNumber,
+    id: DefaultString,
     type: UIConvertType.General,
     tags: [],
     font: {
@@ -23,7 +23,7 @@ export const DefaultUIConvertData: UIConvertData = {
 
 export type UITagMap = {
     tagId: string;
-    convertDataId: number[];
+    convertDataId: string[];
 };
 
 export const DefaultUITagMap: UITagMap = {
