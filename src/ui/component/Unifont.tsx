@@ -35,7 +35,7 @@ function Unifont() {
     const [page, setPage] = useState("main");
     const [tags, setTags] = useState<Tag[]>([]);
     const [defaultConvert, setDefaultConvert] = useState<UIConvertData>({
-        id: 1,
+        id: "2cb57adab6c53f2fb63cae1d1859825f565231f4a7f5b1bd9e93612467b864fc",
         type: UIConvertType.Default,
         tags: [],
         font: init.selection.defaultFont
@@ -101,9 +101,10 @@ function Unifont() {
         return true;
     }
 
-    function setSelect(id: number) {
-        if (selected !== null && selected.id === id) return;
-        if (selected !== null && !isValidSelected()) {
+    function setSelect(id: string) {
+        if (selected === null) return;
+        if (selected.id === id) return;
+        if (!isValidSelected()) {
             return;
         }
 
@@ -122,7 +123,7 @@ function Unifont() {
         if (isValidSelected()) {
             const newItem: UIConvertData = {
                 ...DefaultUIConvertData,
-                id: convertId.current++,
+                id: sha256((new Date()).toUTCString()),
                 type: UIConvertType.General,
                 font: defaultConvert.font
             };
@@ -136,10 +137,14 @@ function Unifont() {
         }
     }
 
-    function deleteConvert(convertId: number) {
-        if (convertId === 1) return;
+    function deleteConvert(e: React.MouseEvent<HTMLDivElement>, convertId: string) {
+        e.stopPropagation();
+
+        if (defaultConvert.id === convertId) return;
+        if (selected.id !== convertId && !isValidSelected()) return;
 
         const idx = converts.map(c => c.id).indexOf(convertId);
+
         setConverts([
             ...converts.slice(0, idx),
             ...converts.slice(idx + 1)
